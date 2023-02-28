@@ -26,12 +26,13 @@ typedef struct symbolChart{
 } symbolChart;
 
 /*public functions*/
-void newSymbolChart(symbolChart* chart);    /*constructor*/
+symbolChart* newSymbolChart();    /*constructor*/
 void deleteSymbolChart(symbolChart* chart); /*distructor*/
 void insertSymbol(Line* line, symbolChart* chart); /*insert new row to chart*/
 void printSymbolChart(symbolChart* chart);  /*print full chart for debbuging*/
 Line* searchSymbol(symbolChart* chart, char* symbol);   /*search in chart by symbol name (1st column) */
-Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]);
 void freeSymbol(Line * line);
+int getChartSize(symbolChart* chart);
+
 
 #endif

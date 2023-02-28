@@ -50,7 +50,7 @@ bool doFile(char* filename, hashTable* table){  /*returns true if file needs to 
     }
     strcpy(newFileName,filename);
     changeFileType(newFileName);
-    writeFP = fopen(newFileName,"w");     /*open 'after macro file' for writing*/
+    writeFP = fopen(newFileName,"w+");     /*open 'after macro file' for writing*/
     newTable(table);
     while(fgets(line,LINE_LENGTH,readFP)){
         sscanf(line,WORD_FORMAT,token);
