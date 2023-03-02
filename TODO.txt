@@ -1,0 +1,18 @@
+generally:
+	_handle errors.
+	_does empty line is empty line in machine code ?
+main:
+
+preprocessor:
+
+passeges:
+
+pass1:
+	_make sure colectings all symbols and symbols only.
+	_add symbol the line number
+	_calculate how many rows needed for each oroginal row
+	
+pass2:
+
+symbolChart:
+	_make sure resizing works good.

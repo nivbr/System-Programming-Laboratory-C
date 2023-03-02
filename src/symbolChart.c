@@ -18,10 +18,11 @@ symbolChart* newSymbolChart(){    /*Constructor func*/
 }
 
 void deleteSymbolChart(symbolChart* chart){ /*distructor func*/
+    int i;
+    Line** lnptr;
     if (!chart)        
         return;
-    Line** lnptr=chart->linesArray;
-    int i;
+    lnptr=chart->linesArray;
     for(i=0;i<chart->size;i++)
         free(lnptr[i]);
 
@@ -40,8 +41,9 @@ void insertSymbol(Line* line, symbolChart* chart){
             exit(0);
         }
     }
-    chart->linesArray[chart->size] = line;  /*connect row to table*/
+    chart->linesArray[chart->size] = line;  /*connect new row to table*/
     chart->size++;  /*increrase size because new row have enterd*/
+    printf("\tAdded new symbol [%s]\n",line->symbol);
 }
     /*search symbol in table -> return it's row*/
 Line* searchSymbol(symbolChart* chart, char* symbol){   /*search symbol in table -> return it's row*/
@@ -55,24 +57,23 @@ Line* searchSymbol(symbolChart* chart, char* symbol){   /*search symbol in table
 
 void printSymbolChart(symbolChart* chart){ 
     int i;
-    if(!chart)
+    if(!chart || !(chart->size) )   /*if chart is empty - don't print*/
         return;
-    printf("\n>Symbol Chart: \n");
-    printf("chart size: %d\n",chart->size);
+    printf("\n\t>Symbol Chart: \n");
+    printf("\t\tchart size: %d\n",chart->size);
     for(i=0;i<(chart->size);i++)
         printLine(chart->linesArray[i]);
-    /*free(chart);*/
-    printf("\t----------------------------------------------------------------------------------------------------\n");
-    printf(">End of Symbol Chart \n\n");
+    printf("\t\t----------------------------------------------------------------------------------------------------\n");
+    printf("\t>End of Symbol Chart \n\n");
 }
 
 void printLine(Line* line){ 
     if(!line){
-        printf("Line is eempty !\n");
+        printf("\t\tLine is eempty !\n");
         return;
     }
-    printf("\t----------------------------------------------------------------------------------------------------\n");
-    printf("\t|Symbol: %s |",line->symbol);
+    printf("\t\t----------------------------------------------------------------------------------------------------\n");
+    printf("\t\t|Symbol: %s |",line->symbol);
     printf("|value: %d |",line->value);
     printf("|Base address: %d |",line->baseAdrs);
     printf("|Offset: %d |",line->offset);
