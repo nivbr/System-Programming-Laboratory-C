@@ -50,6 +50,7 @@ bool pass1(char* filename ,symbolChart * chart, int dataMem[256][2], int codeMem
 void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[256][2], int codeMem[256][2], bool * errorFlag){
     Line * line = NULL;
     bool atr[4] = {false,false,false,false}, symbolFlag= false;   /*errorFlag is on if errors found- the pass2 won't happen*/
+    bool flagData= false, flagString=false;
     int L=0;
     char token[LINE_LENGTH]= ""; /*holds current word*/
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
@@ -70,19 +71,20 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[25
     /*else:  symbol holds nothing and token holds the first op*/
     
     if(!strcmp(token,".data") || !strcmp(token,".string")){ /*data type*/
-        /*if(symbolFlag)
-            NONO? getNextToken(cur_line,token);*/
-        if(!strcmp(token,".data")){ /*.data*/
-            ;
-        }else{  /*.string*/
-            ;
-        }
+        flagData=false;
+        flagString=false;
+        if(!strcmp(token,".data"))  /*.data*/
+            flagData=true;
+        else                        /*.string*/
+            flagString=true;
+        
         if (symbolFlag){
             /**/;
         }
         /*define data*/
         /*write data to mem*/
         /*update DC (by last stages)*/
+        
 
     }else if(!strcmp(token,".extern")){ /*external (OK to assume: no lables before)*/        
         /*getNextToken(cur_line,token);*/
