@@ -3,6 +3,7 @@
 
 bool inpCol(int argc, char** argv, char** filesList[4],int howManyFiles[4]);
 bool prePro(char**  filesLists[4], int howManyFiles[4]);
+bool pass(char** filesList[4],int listCounters[4]);
 void distract(char** filesList[4],int ListCounters[4]);
 
 int main(int argc, char **argv){
