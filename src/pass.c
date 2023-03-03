@@ -6,9 +6,8 @@
 
 Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]);
 bool pass1(char* filename ,symbolChart * chart, int dataMem[256][2], int codeMem[256][2]); /*return true if no errors !*/
-bool doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[256][2], int codeMem[256][2]); /*return true if OK, false if error found*/
+void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[256][2], int codeMem[256][2], bool * errorFlag); /*return true if OK, false if error found*/
 void clearString(char * s);
-void getNextToken(char * line, char * token);
 
 bool pass(char** filesList[4],int listCounters[4]){
     symbolChart * chart;
@@ -39,30 +38,31 @@ bool pass1(char* filename ,symbolChart * chart, int dataMem[256][2], int codeMem
     if((readFP = fopen(filename,"r"))==NULL)
         return false;   /* ^ file doesn't exist*/
     while(fgets(cur_line,LINE_LENGTH,readFP))  /*foreach line in the file*/
-        if(doLine(cur_line,&IC,&DC,chart,dataMem,codeMem))
-            errorFlag=true;
+        doLine(cur_line,&IC,&DC,chart,dataMem,codeMem,&errorFlag);
     fclose(readFP);
     printf("\t>End Pass 1 [%s]\n\n",filename);
-    /*if errors found return false and stop*/
+    if(errorFlag)
+        return false;
     /*else: update all {type==data} in table by addinf IC to value*/
     return true;
 }
 
-bool doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[256][2], int codeMem[256][2]){
+void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[256][2], int codeMem[256][2], bool * errorFlag){
     Line * line = NULL;
     bool atr[4] = {false,false,false,false}, symbolFlag= false;   /*errorFlag is on if errors found- the pass2 won't happen*/
     int L=0;
     char token[LINE_LENGTH]= ""; /*holds current word*/
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
-     memset(token, 0, sizeof(token));    /*reset token before usage*/
+    char tempLine[LINE_LENGTH]="";
     sscanf(cur_line,WORD_FORMAT,token); /*get first token*/
+    strcpy(tempLine,cur_line);
     if(!strcmp(token,";")) /*ignore line that starts with ';' */
-        return false;
+        return;
     /*if a symbol was anounced*/
     if(token[strlen(token)-1]==':' && !strcmp(token,":")){
         symbolFlag= true;
         strcpy(symbol,token);               /*put token into symbol*/
-        strcpy(token,strtok(cur_line,token));   /*update token to be the rest of the line*/
+        strcpy(token,strtok(tempLine,token));   /*update token to be the rest of the line*/
         strtok(token," ");    /*put the seconde token as first*/
 
     }else{strcpy(symbol,"");}   /*reset symbol*/
@@ -70,8 +70,8 @@ bool doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[25
     /*else:  symbol holds nothing and token holds the first op*/
     
     if(!strcmp(token,".data") || !strcmp(token,".string")){ /*data type*/
-        if(symbolFlag)
-            getNextToken(cur_line,token);
+        /*if(symbolFlag)
+            NONO? getNextToken(cur_line,token);*/
         if(!strcmp(token,".data")){ /*.data*/
             ;
         }else{  /*.string*/
@@ -84,15 +84,18 @@ bool doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[25
         /*write data to mem*/
         /*update DC (by last stages)*/
 
-    }else if(!strcmp(token,".extern")){ /*external (OK to assume: no lables before)*/
-        getNextToken(cur_line,token);
+    }else if(!strcmp(token,".extern")){ /*external (OK to assume: no lables before)*/        
+        /*getNextToken(cur_line,token);*/
+        strcpy(token, strtok(tempLine, " "));
+        strcpy(token , strtok(NULL, ","));
+        clearString(token);
         /*insert to symbolChart */
         atr[external]=true; /*set the attributes to to external for it to be copied*/            
         line = newSymbol(token,0,0,0,atr);
         atr[external]=false;    /*was COPIED so can be reset*/
-        insertSymbol(line,chart);   /*insert to chart*/            
+        insertSymbol(line,chart);   /*insert to chart*/               
     }else if(!strcmp(token,".entry")){  /*entry- will be done by pass2*/
-        return false;
+        return;
     }else{  /*just code*/
         /*insert to table if needed
         lookup for op in chart (error or OK)
@@ -101,19 +104,21 @@ bool doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[25
         Build Bin Code for 1st word*/;
         *IC +=L;
     }
-    return true;
+    return;
 }
 
 void clearString(char * s){
     int i;
-    for(i=0;i<strlen(s);i++)    /*clear beggining*/
-        if(!isalnum(s[i]))
-            s++;
-        else break;
+    char* t=s;
     for(i=strlen(s)-1;i>=0;i--) /*clear ending*/
         if(!isalnum(s[i]))
             s[i]=0;
         else break;
+    for(i=0;i<strlen(s);i++)
+        if(!isalnum(s[i]))
+            t++;
+        else break;
+    strcpy(s,t);
 }
 
 Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]){
@@ -130,12 +135,4 @@ Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute
     for(i=0;i<4;i++)
         line->attributes[i]=attribute[i];
     return line;
-}
-
-void getNextToken(char * line, char * token){
-    char tempLine[LINE_LENGTH]={0};
-    strcpy(tempLine,line);
-    strcpy(token,strtok(tempLine, " "));
-    strcpy(token,strtok(0,tempLine));
-    clearString(token);
 }
