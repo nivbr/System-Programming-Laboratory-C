@@ -1,14 +1,18 @@
 #include "symbolChart.h"
+#include <ctype.h>
+
 #define WORD_FORMAT " %80s"
 #define FIRST_MEM_CELL 100
-
 
 Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]);
 bool pass1(char* filename ,symbolChart * chartptr); /*return true if no errors !*/
 void clearString(char * s);
+void getNextToken(char * line, char * token);
 
 bool pass(char** filesList[4],int listCounters[4]){
     symbolChart * chart;
+    int dataMem[256][2]={0};
+    int codeMem[256][2]={0};
     int i;
     printf(">Parsing process\n\n");
     for (i=0;i<listCounters[afterMacro];i++){
@@ -32,13 +36,12 @@ bool pass1(char* filename ,symbolChart * chart){
     char token[LINE_LENGTH]= ""; /*holds current word*/
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
     char cur_line[LINE_LENGTH]= "";  /*holds current line*/
-    char* temp = NULL;
     FILE* readFP; /*file pointer to read .am file */
     printf("\n\t>Pass 1 [%s]\n",filename);
     if((readFP = fopen(filename,"r"))==NULL)
         return false;   /* ^ file doesn't exist*/
     while(fgets(cur_line,LINE_LENGTH,readFP)){  /*foreach line in the file*/
-        lineCounter++; temp=NULL;
+        lineCounter++;
         memset(token, 0, sizeof(token));    /*reset token before usage*/
         sscanf(cur_line,WORD_FORMAT,token); /*get first token*/
         if(!strcmp(token,";")) /*ignore line that starts with ';' */
@@ -55,6 +58,13 @@ bool pass1(char* filename ,symbolChart * chart){
         /*else:  symbol holds nothing and token holds the first op*/
         
         if(!strcmp(token,".data") || !strcmp(token,".string")){ /*data type*/
+            if(symbolFlag)
+                getNextToken(cur_line,token);
+            if(!strcmp(token,".data")){ /*.data*/
+                ;
+            }else{  /*.string*/
+                ;
+            }
             if (symbolFlag){
                 /**/;
             }
@@ -62,14 +72,11 @@ bool pass1(char* filename ,symbolChart * chart){
             /*write data to mem*/
             /*update DC (by last stages)*/
 
-        }else if(!strcmp(token,".extern")){ /*external (OK to assume: no lables before)*/            
-            /*get next token*/
-            temp = strtok(cur_line, " ");
-            temp = strtok(0,cur_line);
-            clearString(temp);            
+        }else if(!strcmp(token,".extern")){ /*external (OK to assume: no lables before)*/
+            getNextToken(cur_line,token);
             /*insert to symbolChart */
-            atr[external]=true; /*set the attributes to to external for it to be copied*/
-            line = newSymbol(temp,0,0,0,atr);
+            atr[external]=true; /*set the attributes to to external for it to be copied*/            
+            line = newSymbol(token,0,0,0,atr);
             atr[external]=false;    /*was COPIED so can be reset*/
             insertSymbol(line,chart);   /*insert to chart*/            
         }else if(!strcmp(token,".entry")){  /*entry- will be done by pass2*/
@@ -82,11 +89,6 @@ bool pass1(char* filename ,symbolChart * chart){
             Build Bin Code for 1st word*/;
             IC+=L;
         }
-        /*add symbol routine
-        line = newSymbol(token, lineCounter,0,0,atr);
-        insertSymbol(line,chart);
-        */
-
     }
     fclose(readFP);
     printf("\t>End Pass 1 [%s]\n\n",filename);
@@ -122,4 +124,12 @@ Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute
     for(i=0;i<4;i++)
         line->attributes[i]=attribute[i];
     return line;
+}
+
+void getNextToken(char * line, char * token){
+    char tempLine[LINE_LENGTH]={0};
+    strcpy(tempLine,line);
+    strcpy(token,strtok(tempLine, " "));
+    strcpy(token,strtok(0,tempLine));
+    clearString(token);
 }
