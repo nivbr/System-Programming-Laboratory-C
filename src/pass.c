@@ -59,7 +59,8 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
     if(!strcmp(token,";")) /*ignore line that starts with ';' */
         return;
     /*if a symbol was anounced*/
-    if(token[strlen(token)-1]==':' && !strcmp(token,":")){
+    if(token[strlen(token)-1]==':' && strcmp(token,":")){
+        printf("\n\tLABEL: [%s] FOUND\n\n",token);
         symbolFlag= true;
         strcpy(symbol,token);               /*put token into symbol*/
         /*strcpy(token,strtok(NULL," "));*/   /*update token to be the rest of the line*/
@@ -72,6 +73,17 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
     if(!strcmp(token,".data") || !strcmp(token,".string")){ /*data type*/
         L=0;
         if(!strcmp(token,".data")){  /*.data*/
+            if(symbolFlag){
+                symbolFlag=false;
+                if(searchSymbol(chart,symbol))  /*if symbol already in chart*/
+                    *errorFlag=true;
+                else{
+                    atr[data]=true; /*set the attributes to to external for it to be copied*/            
+                    line = newSymbol(symbol,*DC,0,0,atr);
+                    atr[data]=false;    /*was COPIED so can be reset*/
+                    insertSymbol(line,chart);   /*insert to chart*/
+                }
+            }
             printf("\n\tBEFORE: IN DATA-> token: [%s] ,line:[%s] \n\n",token,cur_line);        
             while(!stringIsEmpty(token)){
                 printf("\n\tAdd: [%d][%d]\n",(*DC),atoi(token));
@@ -84,8 +96,18 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
         else{    /*.string*/
             ;
         }
-        if (symbolFlag){
-            /**/;
+        if (symbolFlag && false){    /*sure 'code' attribute is OK?*/
+            symbolFlag=false;
+            if(searchSymbol(chart,symbol))  /*if symbol already in chart*/
+                *errorFlag=true;
+            else{
+                atr[code]=true; /*set the attributes to to external for it to be copied*/            
+                line = newSymbol(symbol,*IC,0,0,atr);
+                atr[data]=false;    /*was COPIED so can be reset*/
+                insertSymbol(line,chart);   /*insert to chart*/
+                /*calculate L*/
+                *IC+=L;
+            }
         }
         /*define data*/
         /*write data to mem*/

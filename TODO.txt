@@ -1,6 +1,6 @@
 generally:
 	_handle errors.
-	_does empty line is empty line in machine code ?
+	_use exit(1) on failed amalloc()
 main:
 
 preprocessor:
@@ -8,11 +8,12 @@ preprocessor:
 passeges:
 
 pass1:
-	_make sure colectings all symbols and symbols only.
-	_add symbol the line number
-	_calculate how many rows needed for each oroginal row
+	_make sure colecting all symbols and symbols only.
+	_calculate L for normal ops.
+	_sure that data without LABLE before also procseed DC ?
 	
 pass2:
 
 symbolChart:
 	_make sure resizing works good.
+	_test searchsymbol for the use of pass1()
