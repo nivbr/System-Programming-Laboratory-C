@@ -51,7 +51,6 @@ Line* searchSymbol(symbolChart* chart, char* symbol){   /*search symbol in table
     for(i=0;i<chart->size;i++)
         if(strcmp(chart->linesArray[i]->symbol,symbol)==0)
             return chart->linesArray[i];
-    printf("search failed ! \n\t loop ran : %d times \n",i+1);
     return NULL;
 }
 

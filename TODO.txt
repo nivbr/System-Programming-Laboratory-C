@@ -8,12 +8,11 @@ preprocessor:
 passeges:
 
 pass1:
-	_make sure colecting all symbols and symbols only.
 	_calculate L for normal ops.
 	_sure that data without LABLE before also procseed DC ?
+	_define the writing to codeMem
 	
 pass2:
 
 symbolChart:
 	_make sure resizing works good.
-	_test searchsymbol for the use of pass1()

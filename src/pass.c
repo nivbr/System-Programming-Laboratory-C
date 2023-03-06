@@ -9,6 +9,7 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
 void clearString(char * s);
 bool stringIsEmpty(char* s);
 void printMemPic(int mem[MEMORY_SIZE], const char* headline);
+void clearStringData(char *s);
 
 bool pass(char** filesList[4],int listCounters[4]){
     symbolChart * chart;
@@ -52,7 +53,7 @@ bool pass1(char* filename ,symbolChart * chart, int dataMem[MEMORY_SIZE], int co
 void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE], bool * errorFlag){
     Line * line = NULL;
     bool atr[4] = {false,false,false,false}, symbolFlag= false;   /*errorFlag is on if errors found- the pass2 won't happen*/
-    int L=0;
+    int L=0,i;
     char* token = NULL;
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
     token = strtok(cur_line," ");   /*get first token*/
@@ -60,19 +61,31 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
         return;
     /*if a symbol was anounced*/
     if(token[strlen(token)-1]==':' && strcmp(token,":")){
-        printf("\n\tLABEL: [%s] FOUND\n\n",token);
         symbolFlag= true;
-        strcpy(symbol,token);               /*put token into symbol*/
-        /*strcpy(token,strtok(NULL," "));*/   /*update token to be the rest of the line*/
+        strcpy(symbol,token);   /*put token into symbol*/
+        clearString(symbol);
         token = strtok(NULL," ");
-
     }else{strcpy(symbol,"");}   /*reset symbol*/
     /*if there was a symbol definition: then symbol holds it and token holds the first op*/
     /*else:  symbol holds nothing and token holds the first op*/    
     clearString(token);
-    if(!strcmp(token,".data") || !strcmp(token,".string")){ /*data type*/
-        L=0;
-        if(!strcmp(token,".data")){  /*.data*/
+    /*data OR string type*/
+    if(!strcmp(token,".data") || !strcmp(token,".string")){         
+        /*WITH symbol lable */        
+        if (symbolFlag){    /*sure 'code' attribute is OK?*/
+            symbolFlag=false;
+            if(searchSymbol(chart,symbol))  /*if symbol already in chart*/
+                *errorFlag=true;
+            else{
+                atr[data]=true; /*set the attributes to to external for it to be copied*/            
+                line = newSymbol(symbol,*DC,0,0,atr);
+                atr[data]=false;    /*was COPIED so can be reset*/
+                insertSymbol(line,chart);   /*insert to chart*/
+            }
+        }
+        /*.data*/
+        if(!strcmp(token,".data")){
+            token = strtok(NULL,",");   /*???????*/
             if(symbolFlag){
                 symbolFlag=false;
                 if(searchSymbol(chart,symbol))  /*if symbol already in chart*/
@@ -84,36 +97,32 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
                     insertSymbol(line,chart);   /*insert to chart*/
                 }
             }
-            printf("\n\tBEFORE: IN DATA-> token: [%s] ,line:[%s] \n\n",token,cur_line);        
-            while(!stringIsEmpty(token)){
-                printf("\n\tAdd: [%d][%d]\n",(*DC),atoi(token));
+            clearString(token);   
+            printf("\n\ttoken to memory: %s\n\n",token);
+            while(!stringIsEmpty(token)){                
                 dataMem[*DC]= atoi(token);
-                *DC += 1;
-                L++;
+                (*DC)++;                
                 token = strtok(NULL,",");
             }
         }
-        else{    /*.string*/
-            ;
-        }
-        if (symbolFlag && false){    /*sure 'code' attribute is OK?*/
-            symbolFlag=false;
-            if(searchSymbol(chart,symbol))  /*if symbol already in chart*/
-                *errorFlag=true;
-            else{
-                atr[code]=true; /*set the attributes to to external for it to be copied*/            
-                line = newSymbol(symbol,*IC,0,0,atr);
-                atr[data]=false;    /*was COPIED so can be reset*/
-                insertSymbol(line,chart);   /*insert to chart*/
-                /*calculate L*/
-                *IC+=L;
+        else{ /*.string*/
+            token = strtok(NULL,", \"");   
+            if(symbolFlag){
+                symbolFlag=false;
+                if(searchSymbol(chart,symbol))  /*if symbol already in chart*/
+                    *errorFlag=true;
+                else{                    
+                    atr[data]=true; /*set the attributes to to external for it to be copied*/            
+                    line = newSymbol(symbol,*DC,0,0,atr);
+                    atr[data]=false;    /*was COPIED so can be reset*/
+                    insertSymbol(line,chart);   /*insert to chart*/
+                }
             }
+            for(i=0;i<strlen(token);i++)
+                dataMem[(*DC)++]=token[i];
         }
-        /*define data*/
-        /*write data to mem*/
-        /*update DC (by last stages)*/
-
-    }else if(!strcmp(token,".extern")){ /*external (OK to assume: no lables before)*/        
+    /*external (OK to assume: no lables before)*/        
+    }else if(!strcmp(token,".extern")){ 
         token = strtok(NULL," ");
         clearString(token);
         /*insert to symbolChart */
@@ -124,13 +133,24 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
         memset(token,0,strlen(token));
     }else if(!strcmp(token,".entry")){  /*entry- will be done by pass2*/
         return;
-    }else{  /*just code*/
-        /*insert to table if needed
-        lookup for op in chart (error or OK)
+    /*just code*/
+    }else{  
+         if(symbolFlag){
+            symbolFlag=false;
+            if(searchSymbol(chart,symbol))  /*if symbol already in chart*/
+                *errorFlag=true;
+            else{
+                atr[code]=true; /*set the attributes to to external for it to be copied*/            
+                line = newSymbol(symbol,*IC,0,0,atr);
+                atr[code]=false;    /*was COPIED so can be reset*/
+                insertSymbol(line,chart);   /*insert to chart*/
+            }
+        }
+        /*lookup for op in chart (error or OK)
         -Decode op struct
         CALCULATE L !
         Build Bin Code for 1st word*/;
-        *IC +=L;
+        (*IC) +=L;
     }
     return;
 }
