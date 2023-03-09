@@ -11,6 +11,8 @@ pass1:
 	_calculate L for normal ops.
 	_sure that data without LABLE before also procseed DC ?
 	_define the writing to codeMem
+	_make sure comment lines treated well
+	_make sure at least one of {IC,DC} procseed at each iteration (which isn't comment\empty)
 	
 pass2:
 

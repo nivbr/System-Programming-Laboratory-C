@@ -1,15 +1,6 @@
-#include "symbolChart.h"
-#include <ctype.h>
+#include "pass.h"
 
-#define FIRST_MEM_CELL 100
-
-Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]);
-bool pass1(char* filename ,symbolChart * chart, int dataMem[256], int codeMem[MEMORY_SIZE]); /*return true if no errors !*/
-void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE], bool * errorFlag); /*return true if OK, false if error found*/
-void clearString(char * s);
-bool stringIsEmpty(char* s);
-void printMemPic(int mem[MEMORY_SIZE], const char* headline);
-void clearStringData(char *s);
+char ops[OP_COUNT][OP_MAX_LENGTH]={{"mov"},{"cmp"},{"add"},{"sub"},{"not"},{"clr"},{"lea"},{"inc"},{"dec"},{"jmp"},{"bne"},{"red"},{"prn"},{"jsr"},{"rts"},{"stop"}};
 
 bool pass(char** filesList[4],int listCounters[4]){
     symbolChart * chart;
@@ -24,6 +15,7 @@ bool pass(char** filesList[4],int listCounters[4]){
             printSymbolChart(chart);    /*debug print*/
             deleteSymbolChart(chart);
             printMemPic(dataMem,"data");
+            /*printMemPic(codeMem,"code");*/
             /*pass2(...)*/
         }
         printf(">End Parsing [%s]\n\n",filesList[afterMacro][i]);
@@ -57,7 +49,7 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
     char* token = NULL;
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
     token = strtok(cur_line," ");   /*get first token*/
-    if(!strcmp(token,";")) /*ignore line that starts with ';' */
+    if(!strcmp(token,";")) /*ignore line that starts with ';'- maybe change with token[0] because can be ';blalba' and then strcmp wont return 0 */
         return;
     /*if a symbol was anounced*/
     if(token[strlen(token)-1]==':' && strcmp(token,":")){
@@ -146,60 +138,17 @@ void doLine(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[ME
                 insertSymbol(line,chart);   /*insert to chart*/
             }
         }
-        /*lookup for op in chart (error or OK)
+        for(i=0;i<OP_COUNT;i++)     /*check if op is legal*/
+            if(!strcmp(ops[i],token))
+                break;
+        if(i>OP_COUNT)
+            *errorFlag=true;    /*add error treatment*/
+        /*
         -Decode op struct
-        CALCULATE L !
-        Build Bin Code for 1st word*/;
+        -CALCULATE L !
+        -Build Bin Code for 1st word
+        */
         (*IC) +=L;
     }
     return;
-}
-
-void clearString(char * s){
-    int i;
-    char* t=s;
-    for(i=strlen(s)-1;i>=0;i--) /*clear ending*/
-        if(!isalnum(s[i]))
-            s[i]=0;
-        else break;
-    for(i=0;i<strlen(s);i++)
-        if(isspace(s[i]))
-            t++;
-        else break;
-    strcpy(s,t);
-}
-
-Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]){
-    int i;
-    Line* line = (Line *)malloc(sizeof(Line));
-    if (!line){
-        printf("alocation error !\n");
-        exit(0);
-    }
-    strcpy(line->symbol,symbol);
-    line->value = value;
-    line->offset = offset;
-    line->baseAdrs = baseAdrs;
-    for(i=0;i<4;i++)
-        line->attributes[i]=attribute[i];
-    return line;
-}
-
-bool stringIsEmpty(char* s){
-    int i;
-    if(!s)
-        return true;
-    for(i=0;i<strlen(s);i++)
-        if(!isspace(s[i]))
-            return false;
-    return true;
-}
-
-void printMemPic(int mem[MEMORY_SIZE], const char* headline){
-    int i;
-    printf("\t--%s memory map--\n",headline);
-    for(i=0;i<MEMORY_SIZE;i++)
-        if(mem[i]!=0)
-            printf("\t\t%d | %d\n",i,mem[i]);
-    printf("\t----------------------\n\n");
 }
