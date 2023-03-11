@@ -43,7 +43,6 @@ void insertSymbol(Line* line, symbolChart* chart){
     }
     chart->linesArray[chart->size] = line;  /*connect new row to table*/
     chart->size++;  /*increrase size because new row have enterd*/
-    printf("\tAdded new symbol [%s]\n",line->symbol);
 }
     /*search symbol in table -> return it's row*/
 Line* searchSymbol(symbolChart* chart, char* symbol){   /*search symbol in table -> return it's row*/
@@ -117,4 +116,12 @@ int getChartSize(symbolChart* chart){
         return 0;
     }
     return chart->size;
+}
+
+void updateDataByIC(symbolChart* chart, int IC){
+    int i;
+    for(i=0;i<getChartSize(chart);i++)
+        if(chart->linesArray[i]->attributes[data])
+            (chart->linesArray[i]->value)+=IC;
+    
 }

@@ -13,5 +13,14 @@ enum fileTypes{original,afterMacro, entries, externals};
 
 enum attributes{external,entry,code,data};
 
+typedef struct OpWord{
+    unsigned int ERA:2;
+    unsigned int src:2;
+    unsigned int dst:2;
+    unsigned int opcode:4;
+    unsigned int par1:2;
+    unsigned int par2:2;
+} OpWord;
+
 
 #endif

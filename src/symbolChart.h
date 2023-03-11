@@ -33,6 +33,7 @@ void printSymbolChart(symbolChart* chart);  /*print full chart for debbuging*/
 Line* searchSymbol(symbolChart* chart, char* symbol);   /*search in chart by symbol name (1st column) */
 void freeSymbol(Line * line);
 int getChartSize(symbolChart* chart);
+void updateDataByIC(symbolChart* chart, int IC);
 
 
 #endif
