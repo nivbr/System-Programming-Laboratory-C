@@ -1,6 +1,7 @@
 #ifndef PASS    /*dont double define this header*/
 #define PASS 
 
+#include "decodeLine.h"
 #include "util.h"
 #include <ctype.h>
 

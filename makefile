@@ -1,5 +1,5 @@
-assembler: assembler.o ./src/inputCollection.o ./src/hash.o ./src/preprocessor.o ./src/symbolChart.o ./src/pass.o ./src/util.o
-	gcc -g -ansi assembler.o ./src/inputCollection.o ./src/hash.o ./src/preprocessor.o ./src/symbolChart.o ./src/pass.o ./src/util.o -o assembler
+assembler: assembler.o ./src/inputCollection.o ./src/hash.o ./src/preprocessor.o ./src/symbolChart.o ./src/pass.o ./src/util.o ./src/decodeLine.o
+	gcc -g -ansi assembler.o ./src/inputCollection.o ./src/hash.o ./src/preprocessor.o ./src/symbolChart.o ./src/pass.o ./src/util.o ./src/decodeLine.o -o assembler
 
 assembler.o: assembler.c ./src/data.h
 	gcc -c -Wall -ansi -pedantic assembler.c -o assembler.o
@@ -16,8 +16,11 @@ assembler.o: assembler.c ./src/data.h
 ./src/symbolChart.o: ./src/symbolChart.c ./src/symbolChart.h ./src/data.h
 	gcc -c -Wall -ansi -pedantic ./src/symbolChart.c -o ./src/symbolChart.o 
 
-./src/pass.o: ./src/pass.c ./src/symbolChart.h ./src/pass.h ./src/util.h
+./src/pass.o: ./src/pass.c ./src/symbolChart.h ./src/pass.h ./src/util.h ./src/decodeLine.h
 	gcc -c -Wall -ansi -pedantic ./src/pass.c -o ./src/pass.o 
 
 ./src/util.o: ./src/util.c ./src/symbolChart.h ./src/util.h
 	gcc -c -Wall -ansi -pedantic ./src/util.c -o ./src/util.o 
+
+./src/decodeLine.o: ./src/decodeLine.c ./src/symbolChart.h ./src/decodeLine.h
+	gcc -c -Wall -ansi -pedantic ./src/decodeLine.c -o ./src/decodeLine.o 

@@ -48,8 +48,11 @@ void insertSymbol(Line* line, symbolChart* chart){
 Line* searchSymbol(symbolChart* chart, char* symbol){   /*search symbol in table -> return it's row*/
     int i;
     for(i=0;i<chart->size;i++)
-        if(strcmp(chart->linesArray[i]->symbol,symbol)==0)
+        if(!strcmp(chart->linesArray[i]->symbol,symbol)){
+            printf("\nFOUND SYMBOL! %s",symbol);
             return chart->linesArray[i];
+        }
+            
     return NULL;
 }
 
