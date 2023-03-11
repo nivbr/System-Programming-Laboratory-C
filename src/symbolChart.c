@@ -45,14 +45,11 @@ void insertSymbol(Line* line, symbolChart* chart){
     chart->size++;  /*increrase size because new row have enterd*/
 }
     /*search symbol in table -> return it's row*/
-Line* searchSymbol(symbolChart* chart, char* symbol){   /*search symbol in table -> return it's row*/
+Line* searchSymbol(symbolChart* chart, char* lookup){   /*search symbol in table -> return it's row*/
     int i;
     for(i=0;i<chart->size;i++)
-        if(!strcmp(chart->linesArray[i]->symbol,symbol)){
-            printf("\nFOUND SYMBOL! %s",symbol);
-            return chart->linesArray[i];
-        }
-            
+        if(!strcmp(((chart->linesArray[i])->symbol),lookup) )
+            return chart->linesArray[i];                             
     return NULL;
 }
 
@@ -70,7 +67,7 @@ void printSymbolChart(symbolChart* chart){
 
 void printLine(Line* line){ 
     if(!line){
-        printf("\t\tLine is eempty !\n");
+        printf("\t\tLine is empty !\n");
         return;
     }
     printf("\t\t----------------------------------------------------------------------------------------------------\n");

@@ -19,6 +19,7 @@ void clearString(char * s){
     for(i=0;i<finish-start+1;i++)
         temp[i]=s[start+i];
     strcpy(s,temp);
+    s[i]='\0';  /*?????*/
 }
 
 Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]){

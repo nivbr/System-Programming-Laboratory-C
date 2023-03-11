@@ -64,6 +64,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
     clearString(token);
     /*if a symbol was anounced*/
     if(token[strlen(token)-1]==':' && strcmp(token,":")){
+        token[strlen(token)-1]='\0';   /*enter symbol without ':' sign*/
+        clearString(token);
         symbolFlag= true;
         strcpy(symbol,token);   /*put token into symbol*/        
         token = strtok(NULL," ");
@@ -195,14 +197,11 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[M
     }else{strcpy(symbol,"");}   /*reset symbol*/
     /*if there was a symbol definition: then symbol holds it and token holds the first op*/
     /*else:  symbol holds nothing and token holds the first op*/    
-    clearString(token);
+    /*clearString(token);*/
     if(!strcmp(".entry",token)){    /*if an entry*/
         token = strtok(NULL," ");
         clearString(token);
-        printf("\nDEBUG! token: [%s]",token);
         line = searchSymbol(chart, token);
-        printf(" line adrs[%d] ",line);
-        printf(" w/ line value: %d\n\n",line->value);
         if(!line)
             *errorFlag=true;
         else
