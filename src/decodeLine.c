@@ -125,6 +125,7 @@ void decodeObv(OpWord *opword, int opNum){
 
 /*immidiate (#num)*/
 void decodeShita0(char* word,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
+    word++;
     printf("DECODE(0):  codeMem[%d] <-[%d]=",(*L),(4 * atoi(word)));
     print_binary(4 * atoi(word));
     codeMem[(*L)++]= 4 * atoi(word);
@@ -139,7 +140,7 @@ void decodeShita1(char* word,int *L ,int codeMem[MEMORY_SIZE], symbolChart *char
         exit(1);
     }
     if((symbol = searchSymbol(chart,word))){   /*if symbol on chart*/
-        mila->rest= symbol->value;
+        mila->rest= symbol->value + 100;    /*100 offset for starting memory count*/
         if(symbol->attributes[external])
             mila->ERA=1;
         else if(symbol->attributes[code] || symbol->attributes[data] )
@@ -182,19 +183,19 @@ void decodeShita2(char* word1, char* word2,int *L ,int codeMem[MEMORY_SIZE], sym
 void decodeShita3(char* word,bool dst,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
     if(dst){ /*op is dst*/
         printf("DECODE(3):  codeMem[%d] <-[%d]=",(*L),(4 * atoi(word)));
-        print_binary(4 * atoi(word));
-        codeMem[(*L)++]= 4 * atoi(word);
+        print_binary(4 * atoi(strstr(word,"r")+1));
+        codeMem[(*L)++]= 4 * atoi(strstr(word,"r")+1);
     }
     else{    /*op is src*/
         printf("DECODE(3):  codeMem[%d] <-[%d]=",(*L),(256 * atoi(word)));
-        print_binary(256 * atoi(word));
-        codeMem[(*L)++]= 256 * atoi(word);
+        print_binary(256 * atoi(strstr(word,"r")+1));
+        codeMem[(*L)++]= 256 * atoi(strstr(word,"r")+1);
     }
 }
 void decodeTwoRegs(char* reg1, char* reg2,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
-    printf("DECODE(2rgs):  codeMem[%d] <-[%d]=",(*L),(4*atoi(reg1) + 256*atoi(reg2)));
-    print_binary(4*atoi(reg1) + 256*atoi(reg2));
-    codeMem[(*L)++] = 4*atoi(reg1) + 256*atoi(reg2);
+    printf("DECODE(2rgs):  codeMem[%d] <-[%d]=",(*L),(4*atoi(reg2) + 256*atoi(reg1)));
+    print_binary(4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1));
+    codeMem[(*L)++] = 4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1);
 }
 
 int shitaNum2parNum(int shita){
