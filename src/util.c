@@ -124,15 +124,16 @@ bool isStringCont(char* s, int from){
     return false;
 }
 
-void print_binary(int num) {
-    unsigned int mask = 1u << (sizeof(int) * 8 - 1);  /* create a mask with the leftmost bit set*/
-    while (mask > 0) {
-        if (num & mask) {
-            printf("1");
-        } else {
-            printf("0");
-        }
-        mask >>= 1;  /*shift the mask to the right*/
+
+void print_binary(int num){
+    unsigned int mask = 1u << 13;  /* create a mask with the leftmost bit set*/
+    int i;
+    for(i=0;i<14;i++){
+        if (num & mask) 
+            printf("/");    /*1*/
+        else
+            printf(".");    /*0*/
+        mask >>= 1;  /* shift the mask to the right*/
     }
     printf("\n");
 }
@@ -154,16 +155,32 @@ void printMemory(int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int d
 
 void createEntFile(char* filename, symbolChart* chart){
     int i,size = chart->size;
+    printf("------------------------\n");
     printf("Ent file:\n");
     for(i=0;i<size;i++)
         if(chart->linesArray[i]->attributes[entry])
-            printf("\t%s %d\n",chart->linesArray[i]->symbol, (chart->linesArray[i]->value)+FIRST_MEM_CELL );
+            printf("\t\t%s %d\n",chart->linesArray[i]->symbol, (chart->linesArray[i]->value)+FIRST_MEM_CELL );
+    printf("------------------------\n");
 }
 
 void createExtFile(char* filname, LinkedList* extApperance){
-        printLinkedList(extApperance);
+    printf("------------------------\n");
+    printLinkedList(extApperance);
+    printf("------------------------\n");
 }
 
 void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]){
-    ;
+    int i;
+    printf("------------------------\n");
+    printf("obj file:\n");
+    printf("\t\t%d\t%d\n",codeMemSize,dataMemSize);
+    for(i=0;i<codeMemSize;i++){
+        printf("\t\t%d:",i+FIRST_MEM_CELL);
+        print_binary(codeMem[i]);
+    }
+    for(i=0;i<dataMemSize;i++){
+        printf("\t\t%d:",FIRST_MEM_CELL + codeMemSize++);
+        print_binary(dataMem[i]);
+    }
+    printf("------------------------\n");
 }

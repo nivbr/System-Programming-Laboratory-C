@@ -49,7 +49,7 @@ void printLinkedList(LinkedList* list){
     ptr = list->head;
     printf("externals:\n");
     while(ptr){
-        printf("\t%s %d\n",ptr->symbol,ptr->lineNum);
+        printf("\t\t%s %d\n",ptr->symbol,ptr->lineNum);
         ptr = ptr->next;
     }
         
