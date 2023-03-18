@@ -116,11 +116,11 @@ bool isStringCont(char* s, int from){
         return false;
     for(i=from;i<strlen(s);i++){
         if(isalnum(s[i])){
-            printf("string continues: %s\n",s);
+            /*printf("string continues: %s\n",s);*/
             return true;
         }
     }
-    printf("string from[%d] not continues: %s\n",from,s);
+    /*printf("string from[%d] not continues: %s\n",from,s);*/
     return false;
 }
 
@@ -150,4 +150,20 @@ void printMemory(int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int d
         print_binary(dataMem[i]);
     }
     printf("\t------------------\n\n");
+}
+
+void createEntFile(char* filename, symbolChart* chart){
+    int i,size = chart->size;
+    printf("Ent file:\n");
+    for(i=0;i<size;i++)
+        if(chart->linesArray[i]->attributes[entry])
+            printf("\t%s %d\n",chart->linesArray[i]->symbol, (chart->linesArray[i]->value)+FIRST_MEM_CELL );
+}
+
+void createExtFile(char* filname, LinkedList* extApperance){
+        printLinkedList(extApperance);
+}
+
+void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]){
+    ;
 }

@@ -11,11 +11,13 @@ pass1:
 	_make sure comment lines treated well
 	
 pass2:
-	_create the nesescery files
+	_replace print of ext&ent to creating those files
 
 symbolChart:
 	_make sure resizing works good.
 	
-
-*valgrind:
-valgrind --leak-check=yes ./assembler exampletest
+linkedList:
+	_add comments to explain.
+	
+*valgrind command:
+	valgrind --leak-check=yes ./assembler exampletest

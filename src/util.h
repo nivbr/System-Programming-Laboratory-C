@@ -6,6 +6,7 @@
 #define REGISTER 3
 
 #include "symbolChart.h"
+#include "linkedList.h"
 #include <ctype.h>
 
 Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]);
@@ -22,5 +23,8 @@ int opWord2int(OpWord* word);
 bool isStringCont(char* s, int from); /*checks if the given string continues from index 'from' (included)*/
 void print_binary(int num);
 void printMemory(int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]);
+void createEntFile(char* filename, symbolChart* chart);
+void createExtFile(char* filname, LinkedList* extApperance);
+void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]);
 
 #endif

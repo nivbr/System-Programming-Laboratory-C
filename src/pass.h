@@ -3,6 +3,7 @@
 
 #include "decodeLine.h"
 #include "util.h"
+#include "linkedList.h"
 #include <ctype.h>
 
 bool pass(char** filesList[4],int listCounters[4]);

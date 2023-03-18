@@ -2,8 +2,9 @@
 #define DECODELINE 
 
 #include "util.h"
+#include "linkedList.h"
 
-void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart, int *L, int codeMem[MEMORY_SIZE]);
+void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedList* extApperance, int *L, int codeMem[MEMORY_SIZE]);
 
 typedef struct WordShita1{
     unsigned int ERA:2;

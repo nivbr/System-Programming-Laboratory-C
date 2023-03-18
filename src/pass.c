@@ -3,12 +3,13 @@
 char opsA[OP_COUNT][OP_MAX_LENGTH]={{"mov"},{"cmp"},{"add"},{"sub"},{"not"},{"clr"},{"lea"},{"inc"},{"dec"},{"jmp"},{"bne"},{"red"},{"prn"},{"jsr"},{"rts"},{"stop"}};
 
 void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], bool * errorFlag);
-void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], bool * errorFlag);
+void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, LinkedList*,int dataMem[MEMORY_SIZE], bool * errorFlag);
 bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSize,  int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
-bool pass2(char* filename ,symbolChart * chart,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
+bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
 
 bool pass(char** filesList[4],int listCounters[4]){
     symbolChart * chart;
+    LinkedList * extApperance;
     int dataMem[MEMORY_SIZE]={0};
     int codeMem[MEMORY_SIZE]={0};
     int i, codeMemSize=0,dataMemSize=0;
@@ -16,17 +17,21 @@ bool pass(char** filesList[4],int listCounters[4]){
     for (i=0;i<listCounters[afterMacro];i++){
         printf(">Parsing [%s]\n",filesList[afterMacro][i]);
         chart = newSymbolChart();
+        extApperance = newList();
         if(pass1(filesList[afterMacro][i],chart,&codeMemSize,&dataMemSize,dataMem,codeMem)){  /*no error found*/
             printSymbolChart(chart);    /*debug print*/
-            printMemPic(dataMem,"data");
-            if(pass2(filesList[afterMacro][i],chart,dataMem,codeMem)){  /*no error found*/
+            /*printMemPic(dataMem,"data");*/
+            if(pass2(filesList[afterMacro][i],chart,extApperance,dataMem,codeMem)){  /*no error found*/
                 printSymbolChart(chart);    /*debug print*/
-                printMemPic(codeMem,"code");
+                /*printMemPic(codeMem,"code");*/
                 printMemory(codeMemSize,dataMemSize,codeMem,dataMem);
+                createEntFile(filesList[afterMacro][i],chart);
+                createExtFile(filesList[afterMacro][i],extApperance);
                 /*create files*/
             }
         }
         deleteSymbolChart(chart);
+        deleteList(extApperance);
         printf(">End Parsing [%s]\n\n",filesList[afterMacro][i]);
     }
     printf("\n\n>End Parsing process\n\n");
@@ -165,7 +170,7 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
     return;
 }
 
-bool pass2(char* filename ,symbolChart * chart,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
+bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
     char cur_line[LINE_LENGTH]= "";  /*holds current line*/
     int IC=0,DC=0;
     bool errorFlag= false;
@@ -174,7 +179,7 @@ bool pass2(char* filename ,symbolChart * chart,int dataMem[MEMORY_SIZE], int cod
     if((readFP = fopen(filename,"r"))==NULL)
         return false;   /* ^ file doesn't exist*/
     while(fgets(cur_line,LINE_LENGTH,readFP))  /*foreach line in the file*/
-        doLine2(cur_line,&IC,&DC,chart,codeMem,&errorFlag);
+        doLine2(cur_line,&IC,&DC,chart,extApperance,codeMem,&errorFlag);
     fclose(readFP);
     printf("\t>End Pass 2 [%s]\n\n",filename);
     if(errorFlag)
@@ -182,7 +187,7 @@ bool pass2(char* filename ,symbolChart * chart,int dataMem[MEMORY_SIZE], int cod
     return true;
 }
 
-void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[MEMORY_SIZE], bool * errorFlag){
+void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* extApperance, int codeMem[MEMORY_SIZE], bool * errorFlag){
     Line * line = NULL;
     char* token = NULL;
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
@@ -213,5 +218,5 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[M
         else
             line->attributes[entry]=true;
     }else  /*complete the coding and procseed L*/
-        decode(copy_line,symbolFlag,chart,IC,codeMem);
+        decode(copy_line,symbolFlag,chart,extApperance,IC,codeMem);
 }
