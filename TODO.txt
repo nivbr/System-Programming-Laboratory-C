@@ -1,23 +1,13 @@
 generally:
 	_handle errors.
 	_use exit(1) on failed amalloc()
-main:
-
-preprocessor:
 
 passeges:
-
-pass1:
-	_make sure comment lines treated well
-	
-pass2:
-	_replace print of ext&ent to creating those files
+	_fix comment line (they crash the program)(empty ones re OK).
 
 symbolChart:
 	_make sure resizing works good.
-	
-linkedList:
-	_add comments to explain.
-	
+
+
 *valgrind command:
 	valgrind --leak-check=yes ./assembler exampletest

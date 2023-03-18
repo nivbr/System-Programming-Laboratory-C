@@ -21,10 +21,9 @@ int calcL(char line[LINE_LENGTH], bool startWLable);
 bool stringIsEmpty(char* s);
 int opWord2int(OpWord* word);
 bool isStringCont(char* s, int from); /*checks if the given string continues from index 'from' (included)*/
-void print_binary(int num);
-void printMemory(int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]);
+void decode_binary(int num, FILE* fp);
 void createEntFile(char* filename, symbolChart* chart);
-void createExtFile(char* filname, LinkedList* extApperance);
+void createExtFile(char* filename, LinkedList* extApperance);
 void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]);
 
 #endif

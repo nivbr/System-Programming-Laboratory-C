@@ -19,6 +19,7 @@ LinkedList* newList();
 void addToList(char name[LINE_LENGTH], int line, LinkedList* list);
 void deleteList(LinkedList* list);
 void printLinkedList(LinkedList* list);
+bool listIsEmpty(LinkedList* list);
 
 
 #endif

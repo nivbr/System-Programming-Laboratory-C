@@ -125,62 +125,93 @@ bool isStringCont(char* s, int from){
 }
 
 
-void print_binary(int num){
+void decode_binary(int num, FILE* fp){
     unsigned int mask = 1u << 13;  /* create a mask with the leftmost bit set*/
     int i;
     for(i=0;i<14;i++){
         if (num & mask) 
-            printf("/");    /*1*/
+            fprintf(fp,"/");    /*1*/
         else
-            printf(".");    /*0*/
+            fprintf(fp,".");    /*0*/
         mask >>= 1;  /* shift the mask to the right*/
     }
-    printf("\n");
-}
-
-void printMemory(int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]){
-    int i;
-    printf("Data memory size: %d\nCode memory size: %d\n",dataMemSize,codeMemSize);
-    printf("\t--memory map--\n");
-    for(i=0;i<codeMemSize;i++){
-        printf("\t\t%d | %d | ",i+FIRST_MEM_CELL,codeMem[i]);
-        print_binary(codeMem[i]);
-    }
-    for(i=0;i<dataMemSize;i++){
-        printf("\t\t%d | %d | ",FIRST_MEM_CELL + codeMemSize++,dataMem[i]);
-        print_binary(dataMem[i]);
-    }
-    printf("\t------------------\n\n");
+    fprintf(fp,"\n");
 }
 
 void createEntFile(char* filename, symbolChart* chart){
-    int i,size = chart->size;
-    printf("------------------------\n");
-    printf("Ent file:\n");
+    int i,len=0,c=0,size = chart->size;
+    char name[LINE_LENGTH]="";
+    FILE* fp;
+    if(!getChartSize(chart))
+        return;
     for(i=0;i<size;i++)
         if(chart->linesArray[i]->attributes[entry])
-            printf("\t\t%s %d\n",chart->linesArray[i]->symbol, (chart->linesArray[i]->value)+FIRST_MEM_CELL );
-    printf("------------------------\n");
+            c++;    /*count how many entries, if none don't open a new file*/
+    if(!c)
+        return;
+    len=strlen(filename);
+    strcpy(name,filename);
+    name[len-2]='e';
+    name[len-1]='n';
+    name[len]='t';
+    name[len+1]='\0';
+    fp = fopen(name,"w");    
+    if (fp == NULL) {
+        printf("Error: could not open file %s\n", filename);
+        return;
+    }
+    for(i=0;i<size;i++)
+        if(chart->linesArray[i]->attributes[entry])
+            fprintf(fp,"%s %d\n",chart->linesArray[i]->symbol, (chart->linesArray[i]->value)+FIRST_MEM_CELL );
+    fclose(fp);
 }
 
-void createExtFile(char* filname, LinkedList* extApperance){
-    printf("------------------------\n");
-    printLinkedList(extApperance);
-    printf("------------------------\n");
+void createExtFile(char* filename, LinkedList* extApperance){
+    int len=0;
+    char name[LINE_LENGTH]="";
+    FILE* fp;
+    ListNode* ptr;
+    len=strlen(filename);
+    strcpy(name,filename);
+    name[len-2]='e';
+    name[len-1]='x';
+    name[len]='t';
+    name[len+1]='\0';
+    if(listIsEmpty(extApperance))
+        return;
+    fp = fopen(name,"w");    
+    if (fp == NULL) {
+        printf("Error: could not open file %s\n", filename);
+        return;
+    }
+    ptr = extApperance->head;
+    while(ptr){
+        fprintf(fp,"%s: %d\n",ptr->symbol,ptr->lineNum);
+        ptr = ptr->next;
+    }
+    fclose(fp);
 }
 
 void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]){
     int i;
-    printf("------------------------\n");
-    printf("obj file:\n");
-    printf("\t\t%d\t%d\n",codeMemSize,dataMemSize);
+    char name[LINE_LENGTH]="";
+    FILE* fp;
+    strcpy(name,filename);
+    name[strlen(filename)-2]='o';
+    name[strlen(filename)-1]='b';
+    fp = fopen(name,"w");    
+    if (fp == NULL) {
+        printf("Error: could not open file %s\n", filename);
+        return;
+    }
+    fprintf(fp,"%d %d\n",codeMemSize,dataMemSize);
     for(i=0;i<codeMemSize;i++){
-        printf("\t\t%d:",i+FIRST_MEM_CELL);
-        print_binary(codeMem[i]);
+        fprintf(fp,"%d:",i+FIRST_MEM_CELL);
+        decode_binary(codeMem[i],fp);
     }
     for(i=0;i<dataMemSize;i++){
-        printf("\t\t%d:",FIRST_MEM_CELL + codeMemSize++);
-        print_binary(dataMem[i]);
+        fprintf(fp,"%d:",FIRST_MEM_CELL + codeMemSize++);
+        decode_binary(dataMem[i],fp);
     }
-    printf("------------------------\n");
+    fclose(fp);
 }
