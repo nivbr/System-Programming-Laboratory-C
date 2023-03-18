@@ -8,7 +8,9 @@
 
 
 #define INIT_LINES_CNT 20
-
+#define FIRST_MEM_CELL 100
+#define OP_COUNT 16 /*amount of ops*/
+#define OP_MAX_LENGTH 5 /*length of longest op name +'\0'*/
 
 typedef struct Line{ /*Row in the symbols table, holds table's cells*/
     char symbol[LINE_LENGTH];   /*symbol LABLE*/

@@ -21,7 +21,7 @@ bool pass(char** filesList[4],int listCounters[4]){
             printMemPic(dataMem,"data");
             if(pass2(filesList[afterMacro][i],chart,dataMem,codeMem)){  /*no error found*/
                 printSymbolChart(chart);    /*debug print*/
-                /*printMemPic(codeMem,"code");*/
+                printMemPic(codeMem,"code");
                 /*create files*/
             }
         }
@@ -185,6 +185,7 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[M
     char* token = NULL;
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
     char copy_line[LINE_LENGTH]="";
+    bool symbolFlag = false;
     strcpy(copy_line,cur_line);
     token = strtok(cur_line," \t");   /*get first token*/
     if(!strcmp(token,";") || stringIsEmpty(copy_line)) /*ignore line that starts with ';'- maybe change with token[0] because can be ';blalba' and then strcmp wont return 0 */
@@ -192,6 +193,9 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[M
     clearString(token);
     /*if a symbol was anounced*/
     if(token[strlen(token)-1]==':' && strcmp(token,":")){
+        token[strlen(token)-1]='\0';   /*enter symbol without ':' sign*/
+        clearString(token);
+        symbolFlag= true;
         strcpy(symbol,token);   /*put token into symbol*/        
         token = strtok(NULL," ");
     }else{strcpy(symbol,"");}   /*reset symbol*/
@@ -207,6 +211,6 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[M
         else
             line->attributes[entry]=true;
     }else  /*complete the coding and procseed L*/
-        decode(copy_line,chart,&L,codeMem);
+        decode(copy_line,symbolFlag,chart,&L,codeMem);
     (*IC) += L;
 }

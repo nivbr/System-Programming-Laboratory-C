@@ -11,7 +11,9 @@ pass1:
 	_make sure comment lines treated well
 	
 pass2:
-	_Do!
+	_check decoding of binary to int (and back) is OK
+	_test 1st word decoding
+	_create the nesescery files
 
 symbolChart:
 	_make sure resizing works good.

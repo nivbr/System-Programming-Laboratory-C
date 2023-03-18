@@ -8,10 +8,10 @@ LOOP: 	prn #48
 		sub r1, r4
 		bne END
 		cmp val1, #-6
-		bne END[r15]
+		bne END
 		dec K
 .entry MAIN
-		sub LOOP[r10] ,r14
+		sub LOOP r10 ,r14
 		END: stop
 STR: 	.string "abcd"
 LIST: 	.data 6, -9

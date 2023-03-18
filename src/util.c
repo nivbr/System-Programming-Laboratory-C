@@ -57,59 +57,6 @@ void printMemPic(int mem[MEMORY_SIZE], const char* headline){
     printf("\t----------------------\n\n");
 }
 
-/*return bin code for first word*/
-int InitDecodeOp(char line[LINE_LENGTH], int* L){
-    int bin = 0,i,cur_op=0,temp=0;
-    bool isErr=false, isReg = false, isIm=false, isLab=false;
-    OpWord opword;
-    char* token = strtok(line, " ");   /*initialize strtok() to read from line*/
-    /*initialize opword*/
-    opword.ERA=0;opword.src=0;opword.dst=0;opword.opcode=0;opword.par1=0;opword.par2=0;
- 
-    for(i=0;i<strlen(token);i++)    /*find the opcode field*/
-        if(!strcmp(token,ops[i]))
-            cur_op=i;
-    opword.opcode=cur_op;
-    
-    if(cur_op>=14){  /*group 3: 0 ops, regardless shitat miun*/
-        opword.src=0;
-        opword.dst=0;
-        opword.par1=0;
-        opword.par2=0;
-        *L = 1;
-    }else if (cur_op==4||cur_op==5||(cur_op>=7&&cur_op<=13)){  /*group 2: 1 op*/
-        token = strtok(NULL," ");   /*put the op into token*/
-        temp = token2val(token, &isReg, &isLab, &isIm, &isErr);
-        opword.src=0;
-        opword.dst=0; /*?*/
-        /*shitat miun 2*/
-        if((cur_op==9||cur_op==10||cur_op==13)&&(/*ther'e parameters*/true)){ /*jmp\bne\jsr: way-2*/
-            opword.par1=0;  /*im-00(0),reg-11(2),labl-01(1)*/
-            opword.par2=0;
-        }else{  /*shitat miun 0/1/3*/
-            opword.par1=0;
-            opword.par2=0;
-        }
-    }else{  /*group 1: 2 ops*/
-        opword.src=0;   /*?*/
-        opword.dst=0;  /*?*/
-        opword.par1=0;
-        opword.par2=0;
-        /*shitat miun 0/1/3*/
-    }
-
-    /*opword.ERA=?*/    /*but how????*/
-
-    /*CALCULATE L*/
-
-    return bin;
-}
-
-int token2val(char* token, bool* isReg, bool* isLab, bool* isIm, bool* isErr){
-    
-    return 1;
-}
-
 int calcL(char line[LINE_LENGTH], bool startWLable){
     int i,cur_op=0;
     char *temp = NULL;
@@ -131,9 +78,9 @@ int calcL(char line[LINE_LENGTH], bool startWLable){
         return 3;   /*2 parameters*/
     if(cur_op<=3){  /*ops 0/1/2/3*/
         token = strtok(NULL,",");   /*get paramter*/
-        if(token2op(token) == 3){   /*if the parameter is register*/
+        if(token2op(token) == REGISTER){   /*if the parameter is register*/
             token = strtok(NULL,","); /*get next parameter*/
-            if(token2op(token) == 3)
+            if(token2op(token) == REGISTER)
                 return 2;   /*both parameters registers -2 lines*/
         }
         return 3;   /*at least 1 parameter isn't reg- 3 lines*/
@@ -144,17 +91,31 @@ int calcL(char line[LINE_LENGTH], bool startWLable){
     token = strtok(NULL, ")");  /*token = 2nd parameter*/
     if(!temp)  /*no parameters besides the lable*/
         return 2;   /*1 line only- for lable */
-    if(token2op(temp)==3 && token2op(token)==3) /*both parameters are registers*/
+    if(token2op(temp)==REGISTER && token2op(token)==REGISTER) /*both parameters are registers*/
         return 3;
     return 4; /*at least one parameter isn't reg then 2 last will take 2 more lines*/
 
 }
 
-/*return: 1-immidiate 2-lable 3-register*/
+/*return: 0-immidiate 1-lable 3-register*/
 int token2op(char token[LINE_LENGTH]){
     if(token[0]=='r'&&token[1]>='0'&&token[1]<='7')
-        return 3;
-    if(token[0]=='#'&& atoi(token)  /*what if #0?*/)
-        return 1;
-    return 2;
+        return REGISTER;
+    if(token[0]=='#'&& ++token && atoi(token)  /*what if #0?*/)
+        return IMMIDIATE;
+    return LABLE;
+}
+
+int opWord2int(OpWord* word){
+    return word->ERA+ 4*word->dst+ 16*word->src+ 64*word->opcode+ 1024*word->par2+ 4096*word->par1;
+}
+
+bool isStringCont(char* s, int from){
+    int i;
+    if(!s)  /*on null string*/
+        return false;
+    for(i=from;i<strlen(s);i++)
+        if(isalnum(s[i]))
+            return true;
+    return false;
 }

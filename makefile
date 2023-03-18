@@ -22,5 +22,5 @@ assembler.o: assembler.c ./src/data.h
 ./src/util.o: ./src/util.c ./src/symbolChart.h ./src/util.h
 	gcc -c -Wall -ansi -pedantic ./src/util.c -o ./src/util.o 
 
-./src/decodeLine.o: ./src/decodeLine.c ./src/symbolChart.h ./src/decodeLine.h
+./src/decodeLine.o: ./src/decodeLine.c ./src/util.h ./src/decodeLine.h
 	gcc -c -Wall -ansi -pedantic ./src/decodeLine.c -o ./src/decodeLine.o 
