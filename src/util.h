@@ -20,5 +20,6 @@ int calcL(char line[LINE_LENGTH], bool startWLable);
 bool stringIsEmpty(char* s);
 int opWord2int(OpWord* word);
 bool isStringCont(char* s, int from); /*checks if the given string continues from index 'from' (included)*/
+void print_binary(int num);
 
 #endif

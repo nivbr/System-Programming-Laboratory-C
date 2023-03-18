@@ -52,8 +52,10 @@ void printMemPic(int mem[MEMORY_SIZE], const char* headline){
     int i;
     printf("\t--%s memory map--\n",headline);
     for(i=0;i<MEMORY_SIZE;i++)
-        if(mem[i]!=0)   /*skips '\0' prints*/
+        if(mem[i]!=0)
             printf("\t\t%d | %d\n",i,mem[i]);
+    /*for(i=0;i<MEMORY_SIZE;i++)
+        printf("\t\t%d | %d\n",i,mem[i]);*/
     printf("\t----------------------\n\n");
 }
 
@@ -114,8 +116,25 @@ bool isStringCont(char* s, int from){
     int i;
     if(!s)  /*on null string*/
         return false;
-    for(i=from;i<strlen(s);i++)
-        if(isalnum(s[i]))
+    for(i=from;i<strlen(s);i++){
+        if(isalnum(s[i])){
+            printf("string continues: %s\n",s);
             return true;
+        }
+    }
+    printf("string from[%d] not continues: %s\n",from,s);
     return false;
+}
+
+void print_binary(int num) {
+    unsigned int mask = 1u << (sizeof(int) * 8 - 1);  /* create a mask with the leftmost bit set*/
+    while (mask > 0) {
+        if (num & mask) {
+            printf("1");
+        } else {
+            printf("0");
+        }
+        mask >>= 1;  /*shift the mask to the right*/
+    }
+    printf("\n");
 }

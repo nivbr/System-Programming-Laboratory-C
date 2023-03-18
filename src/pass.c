@@ -181,7 +181,6 @@ bool pass2(char* filename ,symbolChart * chart, int dataMem[MEMORY_SIZE], int co
 
 void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[MEMORY_SIZE], bool * errorFlag){
     Line * line = NULL;
-    int L=0;
     char* token = NULL;
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
     char copy_line[LINE_LENGTH]="";
@@ -211,6 +210,5 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int codeMem[M
         else
             line->attributes[entry]=true;
     }else  /*complete the coding and procseed L*/
-        decode(copy_line,symbolFlag,chart,&L,codeMem);
-    (*IC) += L;
+        decode(copy_line,symbolFlag,chart,IC,codeMem);
 }
