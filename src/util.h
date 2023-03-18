@@ -21,5 +21,6 @@ bool stringIsEmpty(char* s);
 int opWord2int(OpWord* word);
 bool isStringCont(char* s, int from); /*checks if the given string continues from index 'from' (included)*/
 void print_binary(int num);
+void printMemory(int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]);
 
 #endif

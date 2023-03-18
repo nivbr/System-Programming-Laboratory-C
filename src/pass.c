@@ -4,24 +4,25 @@ char opsA[OP_COUNT][OP_MAX_LENGTH]={{"mov"},{"cmp"},{"add"},{"sub"},{"not"},{"cl
 
 void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], bool * errorFlag);
 void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], bool * errorFlag);
-bool pass1(char* filename ,symbolChart * chart, int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
-bool pass2(char* filename ,symbolChart * chart, int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
+bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSize,  int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
+bool pass2(char* filename ,symbolChart * chart,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
 
 bool pass(char** filesList[4],int listCounters[4]){
     symbolChart * chart;
-    int dataMem[256]={0};
-    int codeMem[256]={0};
-    int i;
+    int dataMem[MEMORY_SIZE]={0};
+    int codeMem[MEMORY_SIZE]={0};
+    int i, codeMemSize=0,dataMemSize=0;
     printf(">Parsing process\n\n");
     for (i=0;i<listCounters[afterMacro];i++){
         printf(">Parsing [%s]\n",filesList[afterMacro][i]);
         chart = newSymbolChart();
-        if(pass1(filesList[afterMacro][i],chart,dataMem,codeMem)){  /*no error found*/
+        if(pass1(filesList[afterMacro][i],chart,&codeMemSize,&dataMemSize,dataMem,codeMem)){  /*no error found*/
             printSymbolChart(chart);    /*debug print*/
             printMemPic(dataMem,"data");
             if(pass2(filesList[afterMacro][i],chart,dataMem,codeMem)){  /*no error found*/
                 printSymbolChart(chart);    /*debug print*/
                 printMemPic(codeMem,"code");
+                printMemory(codeMemSize,dataMemSize,codeMem,dataMem);
                 /*create files*/
             }
         }
@@ -32,7 +33,7 @@ bool pass(char** filesList[4],int listCounters[4]){
     return true;
 }
 
-bool pass1(char* filename ,symbolChart * chart, int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
+bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSize,  int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
     char cur_line[LINE_LENGTH]= "";  /*holds current line*/
     int IC=0,DC=0;
     bool errorFlag= false;
@@ -43,6 +44,8 @@ bool pass1(char* filename ,symbolChart * chart, int dataMem[MEMORY_SIZE], int co
     while(fgets(cur_line,LINE_LENGTH,readFP))  /*foreach line in the file*/
         doLine1(cur_line,&IC,&DC,chart,dataMem,&errorFlag);
     fclose(readFP);
+    *codeMemSize=IC;
+    *dataMemSize=DC;
     printf("\t>End Pass 1 [%s]\n\n",filename);
     if(errorFlag)
         return false;
@@ -162,7 +165,7 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
     return;
 }
 
-bool pass2(char* filename ,symbolChart * chart, int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
+bool pass2(char* filename ,symbolChart * chart,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
     char cur_line[LINE_LENGTH]= "";  /*holds current line*/
     int IC=0,DC=0;
     bool errorFlag= false;

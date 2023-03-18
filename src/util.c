@@ -54,8 +54,6 @@ void printMemPic(int mem[MEMORY_SIZE], const char* headline){
     for(i=0;i<MEMORY_SIZE;i++)
         if(mem[i]!=0)
             printf("\t\t%d | %d\n",i,mem[i]);
-    /*for(i=0;i<MEMORY_SIZE;i++)
-        printf("\t\t%d | %d\n",i,mem[i]);*/
     printf("\t----------------------\n\n");
 }
 
@@ -137,4 +135,19 @@ void print_binary(int num) {
         mask >>= 1;  /*shift the mask to the right*/
     }
     printf("\n");
+}
+
+void printMemory(int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]){
+    int i;
+    printf("Data memory size: %d\nCode memory size: %d\n",dataMemSize,codeMemSize);
+    printf("\t--memory map--\n");
+    for(i=0;i<codeMemSize;i++){
+        printf("\t\t%d | %d | ",i+FIRST_MEM_CELL,codeMem[i]);
+        print_binary(codeMem[i]);
+    }
+    for(i=0;i<dataMemSize;i++){
+        printf("\t\t%d | %d | ",FIRST_MEM_CELL + codeMemSize++,dataMem[i]);
+        print_binary(dataMem[i]);
+    }
+    printf("\t------------------\n\n");
 }
