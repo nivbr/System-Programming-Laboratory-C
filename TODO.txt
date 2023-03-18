@@ -11,7 +11,6 @@ pass1:
 	_make sure comment lines treated well
 	
 pass2:
-	_check decoding of binary to int (and back) is OK
 	_create the nesescery files
 
 symbolChart:
