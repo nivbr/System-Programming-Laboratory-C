@@ -1,9 +1,6 @@
 generally:
 	_handle errors.
-	_use exit(1) on failed amalloc()
-
-passeges:
-	_fix comment line (they crash the program)(empty ones re OK).
+	_use exit(1) on failed malloc()
 
 symbolChart:
 	_make sure resizing works good.
