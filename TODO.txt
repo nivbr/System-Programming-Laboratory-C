@@ -8,3 +8,9 @@ symbolChart:
 
 *valgrind command:
 	valgrind --leak-check=yes ./assembler exampletest
+
+error cathing:
+	_num of operands is legal
+	_type of operands is legal
+	_number
+	_string

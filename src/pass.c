@@ -3,7 +3,7 @@
 char opsA[OP_COUNT][OP_MAX_LENGTH]={{"mov"},{"cmp"},{"add"},{"sub"},{"not"},{"clr"},{"lea"},{"inc"},{"dec"},{"jmp"},{"bne"},{"red"},{"prn"},{"jsr"},{"rts"},{"stop"}};
 
 void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], bool * errorFlag, int lineCounter);
-void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart, LinkedList*,int dataMem[MEMORY_SIZE], bool * errorFlag);
+void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* extApperance, int codeMem[MEMORY_SIZE], bool * errorFlag,int lineCounter);
 bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSize,  int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
 bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
 
@@ -28,7 +28,6 @@ bool pass(char** filesList[4],int listCounters[4]){
                 createObFile(filesList[afterMacro][i],codeMemSize,dataMemSize,codeMem,dataMem);
                 createEntFile(filesList[afterMacro][i],chart);
                 createExtFile(filesList[afterMacro][i],extApperance);
-                /*create files*/
             }
         }
         deleteSymbolChart(chart);
@@ -199,7 +198,7 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
 
 bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
     char cur_line[LINE_LENGTH]= "";  /*holds current line*/
-    int IC=0,DC=0;
+    int IC=0,DC=0,lineCounter=0;
     bool errorFlag= false;
     FILE* readFP; /*file pointer to read .am file */
     printf("\n\t>Pass 2 [%s]\n",filename);
@@ -207,7 +206,7 @@ bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int data
         return false;   /* ^ file doesn't exist*/
     while(fgets(cur_line,LINE_LENGTH,readFP)){  /*foreach line in the file*/
         strip_extra_spaces(cur_line);
-        doLine2(cur_line,&IC,&DC,chart,extApperance,codeMem,&errorFlag);
+        doLine2(cur_line,&IC,&DC,chart,extApperance,codeMem,&errorFlag,++lineCounter);
     }
     fclose(readFP);
     printf("\t>End Pass 2 [%s]\n\n",filename);
@@ -216,7 +215,7 @@ bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int data
     return true;
 }
 
-void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* extApperance, int codeMem[MEMORY_SIZE], bool * errorFlag){
+void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* extApperance, int codeMem[MEMORY_SIZE], bool * errorFlag,int lineCounter){
     Line * line = NULL;
     char* token = NULL;
     char symbol[LINE_LENGTH]="";    /*holds the symbol if there is*/
@@ -242,10 +241,12 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* ex
         token = strtok(NULL," ");
         clearString(token);
         line = searchSymbol(chart, token);
-        if(!line)
+        if(!line || line->attributes[external]){
+            printf("ERROR: (line:%d) Cannot define lable as both .entery and .exter!\n",lineCounter);
             *errorFlag=true;
+        }
         else
             line->attributes[entry]=true;
     }else  /*complete the coding and procseed L*/
-        decode(copy_line,symbolFlag,chart,extApperance,IC,codeMem);
+        decode(copy_line,symbolFlag,chart,extApperance,IC,codeMem,lineCounter,errorFlag);
 }
