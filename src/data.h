@@ -6,6 +6,7 @@
 #define LINE_LENGTH 81          /*maximum lengt of line*/
 #define MEMORY_SIZE 256        /*size of memory*/
 #define BITS_IN_WORD 14   
+#define NUM_OF_REGS 8           /*r0 upto r7 registers*/
 
 typedef enum { false, true } bool;
 

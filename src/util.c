@@ -2,6 +2,8 @@
 
 char ops[OP_COUNT][OP_MAX_LENGTH]={{"mov"},{"cmp"},{"add"},{"sub"},{"not"},{"clr"},{"lea"},{"inc"},{"dec"},{"jmp"},{"bne"},{"red"},{"prn"},{"jsr"},{"rts"},{"stop"}};
 
+bool regIsCorrect(char token[LINE_LENGTH]);
+
 void clearString(char * s){
     int i,start=0,finish=strlen(s);
     char temp[81]="";
@@ -48,16 +50,15 @@ bool stringIsEmpty(char* s){
     return true;
 }
 
-void printMemPic(int mem[MEMORY_SIZE], const char* headline){
+void printMemPic(int mem[MEMORY_SIZE],int size, const char* headline){
     int i;
     printf("\t--%s memory map--\n",headline);
-    for(i=0;i<MEMORY_SIZE;i++)
-        if(mem[i]!=0)
+    for(i=0;i<MEMORY_SIZE && i<size;i++)
             printf("\t\t%d | %d\n",i,mem[i]);
     printf("\t----------------------\n\n");
 }
 
-int calcL(char line[LINE_LENGTH], bool startWLable){
+int calcL(char line[LINE_LENGTH], bool startWLable, bool* errorFlag, int lineCounter){
     int i,cur_op=0;
     char *temp = NULL;
     char* token = NULL;
@@ -69,7 +70,6 @@ int calcL(char line[LINE_LENGTH], bool startWLable){
     for(i=0;i<OP_COUNT;i++)    /*find the opcode field*/
         if(!strcmp(token,ops[i]))
             cur_op=i;    
-
     if(cur_op>=14)  /*no paramters- 1 line*/
         return 1;
     if(cur_op==4||cur_op==5||cur_op==7||cur_op==8||cur_op==11||cur_op==12)
@@ -79,9 +79,18 @@ int calcL(char line[LINE_LENGTH], bool startWLable){
     if(cur_op<=3){  /*ops 0/1/2/3*/
         token = strtok(NULL,",");   /*get paramter*/
         if(token2op(token) == REGISTER){   /*if the parameter is register*/
-            token = strtok(NULL,","); /*get next parameter*/
-            if(token2op(token) == REGISTER)
+            if(!regIsCorrect(token)){
+                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);
+                *errorFlag=true;
+            }
+            token = strtok(NULL,","); /*get next parameter*/            
+            if(token2op(token) == REGISTER){
+                if(!regIsCorrect(token)){
+                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);
+                *errorFlag=true;
+                }
                 return 2;   /*both parameters registers -2 lines*/
+            }
         }
         return 3;   /*at least 1 parameter isn't reg- 3 lines*/
     }
@@ -91,18 +100,39 @@ int calcL(char line[LINE_LENGTH], bool startWLable){
     token = strtok(NULL, ")");  /*token = 2nd parameter*/
     if(!temp)  /*no parameters besides the lable*/
         return 2;   /*1 line only- for lable */
-    if(token2op(temp)==REGISTER && token2op(token)==REGISTER) /*both parameters are registers*/
+    if(token2op(temp)==REGISTER && token2op(token)==REGISTER){ /*both parameters are registers*/
+        if(!regIsCorrect(token)){
+                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);
+                *errorFlag=true;
+        }
+        if(!regIsCorrect(temp)){
+                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,temp);
+                *errorFlag=true;
+        }
         return 3;
+    }
     return 4; /*at least one parameter isn't reg then 2 last will take 2 more lines*/
 
+}
+bool regIsCorrect(char token[LINE_LENGTH]){
+    if(token[0]=='r'&&token[1]>='0'&&token[1]<='7' &&! isStringCont(token,2))
+       return true;
+    return false;
 }
 
 /*return: 0-immidiate 1-lable 3-register*/
 int token2op(char token[LINE_LENGTH]){
-    if(token[0]=='r'&&token[1]>='0'&&token[1]<='7')
-        return REGISTER;
-    if(token[0]=='#'&& ++token && atoi(token)  /*what if #0?*/)
+    clearString(token);
+    printf("token2op: token-%s ",token);
+    if(token[0]=='r'&&token[1]>='0'&&token[1]<='7'){
+            printf("to REGISTER\n");
+            return REGISTER;
+    }
+    if(token[0]=='#'&& ++token && atoi(token)  /*what if #0?*/){
+        printf("to IMMIDIATE\n");
         return IMMIDIATE;
+    }
+    printf("to LABLE\n");
     return LABLE;
 }
 
@@ -123,7 +153,6 @@ bool isStringCont(char* s, int from){
     /*printf("string from[%d] not continues: %s\n",from,s);*/
     return false;
 }
-
 
 void decode_binary(int num, FILE* fp){
     unsigned int mask = 1u << 13;  /* create a mask with the leftmost bit set*/
@@ -214,4 +243,40 @@ void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[ME
         decode_binary(dataMem[i],fp);
     }
     fclose(fp);
+}
+
+/*returns true if error in symbol announcment*/
+bool isSymbolError(char* symbol){
+    int i;
+    for(i=0;i<strlen(symbol);i++)   /*check if lable includes non alfanumberic*/
+        if(!isalnum(symbol[i]))            
+            return true;        
+    for(i=0;i<OP_COUNT;i++)         /*check if lable is name of op*/
+        if(!strcmp(symbol,ops[i]))
+            return true;
+    for(i=0;i<NUM_OF_REGS;i++)      /*check if lable is register*/
+        if(symbol[0]=='r' && isStringCont(symbol,1) && atoi(symbol+1)>=0 && atoi(symbol+1)<=NUM_OF_REGS)
+            return true;
+    return false;
+}
+
+void strip_extra_spaces(char* str) {
+  int i, x;
+  for(i=x=0; str[i]; ++i)
+    if(!isspace(str[i]) || (i > 0 && !isspace(str[i-1])))
+      str[x++] = str[i];
+  str[x] = '\0';  
+}
+
+void print_binary(int num){
+    unsigned int mask = 1u << 13;  /* create a mask with the leftmost bit set*/
+    int i;
+    for(i=0;i<14;i++){
+        if (num & mask) 
+            printf("/");    /*1*/
+        else
+            printf(".");    /*0*/
+        mask >>= 1;  /* shift the mask to the right*/
+    }
+    printf("\n");
 }

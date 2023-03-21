@@ -32,12 +32,12 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
             opNum=i; 
     decodeObv(opword,opNum);   /*0 operands*/
     if(opNum>=14) /*rts,stop known because no parameters*/
-        codeMem[(*L)++] = opWord2int(opword);
+        codeMem[(*L)++] = opWord2int(opword);    
     else if(opNum==4 || opNum==5 || opNum==7 || opNum==8 || opNum==11 || opNum==12){ /*1 operand group*/
-        token = strtok(NULL, " ");
+        token = strtok(NULL, " \t");  /*\t*/
         clearString(token);
         shita = token2op(token);
-        opword->dst= shita;
+        opword->dst= shita;        
         codeMem[(*L)++] = opWord2int(opword);
         if(shita==IMMIDIATE /*0*/)
             decodeShita0(token,L,codeMem,chart);
@@ -46,11 +46,12 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
         else if (shita==REGISTER   /*3*/)
             decodeShita3(token,true,L,codeMem,chart);
     }else if((opNum>=0 && opNum<=3) || opNum==6){     /*2 operands group*/
-        p1 = strtok(NULL, " ,");
-        p2 = strtok(NULL," ,");
+        p1 = strtok(NULL, " ,\t");  /*\t*/
+        p2 = strtok(NULL," ,\t");   /*\t*/
+        printf("\t2op group: p1:%s ,p2:%s\n",p1,p2);
         shita = token2op(p1);
         opword->src = token2op(p1);
-        opword->dst = token2op(p2);
+        opword->dst = token2op(p2);        
         codeMem[(*L)++] = opWord2int(opword);
         if (shita == REGISTER && token2op(p2)==REGISTER)
             decodeTwoRegs(p1,p2,L,codeMem,chart);
@@ -76,15 +77,14 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
             p2 = strtok(NULL,",)");
             opword->par1=shitaNum2parNum(token2op(p1));
             opword->par2=shitaNum2parNum(token2op(p2));
-            opword->dst=2;
+            opword->dst=2;            
             codeMem[(*L)++]=opWord2int(opword);
             decodeShita1(lbl,L,codeMem,chart,extApperance);
             decodeShita2(p1,p2,L,codeMem,chart,extApperance);
-
         }else{  /*don't expect more parameters after lable*/
             opword->dst=1;
             opword->par1=0;
-            opword->par2=0;
+            opword->par2=0;            
             codeMem[(*L)++]=opWord2int(opword);
             decodeShita1(lbl,L,codeMem,chart,extApperance);
         }
@@ -107,7 +107,10 @@ void decodeObv(OpWord *opword, int opNum){
 
 /*immidiate (#num)*/
 void decodeShita0(char* word,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
-    codeMem[(*L)++]= 4 * atoi(++word);  /*maybe word++ should've come a line before, seperatly?*/
+    word++;
+    printf("DECODE(0):  codeMem[%d] <-[%d]=",(*L),(4 * atoi(word)));
+    print_binary(4 * atoi(word));
+    codeMem[(*L)++]= 4 * atoi(word);  /*++word*/
 }
 /*lable*/
 void decodeShita1(char* word,int *L ,int codeMem[MEMORY_SIZE], symbolChart *chart,LinkedList* extApperance){
@@ -119,13 +122,14 @@ void decodeShita1(char* word,int *L ,int codeMem[MEMORY_SIZE], symbolChart *char
         exit(1);
     }
     if((sym = searchSymbol(chart,word))){   /*if symbol on chart*/
-        mila->rest= sym->value + FIRST_MEM_CELL;    /*100 offset for starting memory count ??should i add by L ????????????*/            
         if(sym->attributes[external]){
             mila->ERA=1;
             addToList(sym->symbol,(*L)+FIRST_MEM_CELL,extApperance); /*if decoding an entry then add it to entry apperance map*/
         }            
-        else if(sym->attributes[code] || sym->attributes[data] )
+        else if(sym->attributes[code] || sym->attributes[data] ){
             mila->ERA=2;
+            mila->rest= sym->value + FIRST_MEM_CELL;    /*100 offset for starting memory count ??should i add by L ????????????*/            
+        }
         else
             printf("Eror understading the decoding of shita 1 [word=%s]",word);
     }else{
@@ -133,6 +137,8 @@ void decodeShita1(char* word,int *L ,int codeMem[MEMORY_SIZE], symbolChart *char
         free(mila);
         return;
     }
+    printf("DECODE(1-%s[%d]):  codeMem[%d] <-[%d]=",word,sym->value,(*L),(mila->ERA + 4*mila->rest));
+    print_binary(mila->ERA + 4*mila->rest);
     codeMem[(*L)++] = mila->ERA + 4*mila->rest;
     free(mila);
 }
@@ -160,12 +166,21 @@ void decodeShita2(char* word1, char* word2,int *L ,int codeMem[MEMORY_SIZE], sym
     }
 }
 void decodeShita3(char* word,bool dst,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
-    if(dst) /*op is dst*/
+    if(dst){ /*op is dst*/
+        printf("DECODE(3-%s):  codeMem[%d] <-[%d]=",strstr(word,"r"),(*L),(4 * atoi(word)));
+        print_binary(4 * atoi(strstr(word,"r")+1));
         codeMem[(*L)++]= 4 * atoi(strstr(word,"r")+1);
-    else    /*op is src*/
+    }
+    else{    /*op is src*/
+        printf("DECODE(3-%s):  codeMem[%d] <-[%d]=",strstr(word,"r"),(*L),(256 * atoi(word)));
+        print_binary(256 * atoi(strstr(word,"r")+1));
         codeMem[(*L)++]= 256 * atoi(strstr(word,"r")+1);
+    }
 }
 void decodeTwoRegs(char* reg1, char* reg2,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
+    clearString(reg1);clearString(reg2);
+    printf("DECODE(2rgs: %s,%s):  codeMem[%d] <-[%d]=",reg1,reg2,(*L),(4*atoi(reg2) + 256*atoi(reg1)));
+    print_binary(4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1));
     codeMem[(*L)++] = 4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1);
 }
 
