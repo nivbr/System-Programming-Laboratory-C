@@ -1,5 +1,5 @@
 generally:
-	_write errors to stdout
+	_write errors to stdout: simply use fprintf(stderr,"ERROR msg...");
 	_use exit(1) on failed malloc()
 
 symbolChart:
