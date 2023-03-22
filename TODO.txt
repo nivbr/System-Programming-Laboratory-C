@@ -5,12 +5,11 @@ generally:
 symbolChart:
 	_make sure resizing works good.
 
-
-*valgrind command:
-	valgrind --leak-check=yes ./assembler exampletest
-
 error cathing:
-	_num of operands is legal
 	_type of operands is legal
 	_number
 	_string
+	
+	
+*valgrind command:
+	valgrind --leak-check=yes ./assembler exampletest

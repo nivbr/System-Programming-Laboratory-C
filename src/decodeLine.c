@@ -15,6 +15,7 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
     int i,opNum=-1,shita=-1;
     char* token = NULL, *lbl = NULL, *p1=NULL, *p2=NULL;
     char copyLine[LINE_LENGTH]="";
+    char *temp = "";
     OpWord* opword = (OpWord*)malloc(sizeof(OpWord));
     if (!opword){
         printf("Allocation Error!\n");
@@ -31,62 +32,93 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
         if(!strcmp(token,opsB[i]))
             opNum=i; 
     decodeObv(opword,opNum);   /*0 operands*/
-    if(opNum>=14) /*rts,stop known because no parameters*/
-        codeMem[(*L)++] = opWord2int(opword);    
+    if(opNum>=14){ /*rts,stop known because no parameters*/
+        temp = strtok(NULL," ,\t");
+        if(temp){  /*if ther's another token after the last one than it's an error*/
+            *errorFlag=true;
+            printf("ERROR: (line:%d) too many operands !\n",lineCounter);
+        }else
+            codeMem[(*L)++] = opWord2int(opword);    
+    }
     else if(opNum==4 || opNum==5 || opNum==7 || opNum==8 || opNum==11 || opNum==12){ /*1 operand group*/
         token = strtok(NULL, " \t");  /*\t*/
-        clearString(token);
-        shita = token2op(token);
-        opword->dst= shita;        
-        codeMem[(*L)++] = opWord2int(opword);
-        if(shita==IMMIDIATE /*0*/)
-            decodeShita0(token,L,codeMem,chart);
-        else if(shita==LABLE   /*1*/)
-            decodeShita1(token,L,codeMem,chart, extApperance,lineCounter,errorFlag);
-        else if (shita==REGISTER   /*3*/)
-            decodeShita3(token,true,L,codeMem,chart);
+        temp = strtok(NULL," ,\t");
+        if(temp){  /*if ther's another token after the last one than it's an error*/
+            *errorFlag=true;
+            printf("ERROR: (line:%d) too many operands !\n",lineCounter);
+        }else{
+            clearString(token);
+            shita = token2op(token);
+            opword->dst= shita;        
+            codeMem[(*L)++] = opWord2int(opword);
+            if(shita==IMMIDIATE /*0*/)
+                decodeShita0(token,L,codeMem,chart);
+            else if(shita==LABLE   /*1*/)
+                decodeShita1(token,L,codeMem,chart, extApperance,lineCounter,errorFlag);
+            else if (shita==REGISTER   /*3*/)
+                decodeShita3(token,true,L,codeMem,chart);
+        }
     }else if((opNum>=0 && opNum<=3) || opNum==6){     /*2 operands group*/
         p1 = strtok(NULL, " ,\t");  /*\t*/
         p2 = strtok(NULL," ,\t");   /*\t*/
-        printf("\t2op group: p1:%s ,p2:%s\n",p1,p2);
-        shita = token2op(p1);
-        opword->src = token2op(p1);
-        opword->dst = token2op(p2);        
-        codeMem[(*L)++] = opWord2int(opword);
-        if (shita == REGISTER && token2op(p2)==REGISTER)
-            decodeTwoRegs(p1,p2,L,codeMem,chart);
-        else{
-            if(shita==IMMIDIATE /*0*/)
-            decodeShita0(p1,L,codeMem,chart);
-            else if(shita==LABLE   /*1*/)
-                decodeShita1(p1,L,codeMem,chart, extApperance,lineCounter,errorFlag);
-            else if (shita==REGISTER   /*3*/)
-                decodeShita3(p1,false,L,codeMem,chart);
-            shita = token2op(p2);
-            if(shita==IMMIDIATE /*0*/)
-            decodeShita0(p2,L,codeMem,chart);
-            else if(shita==LABLE   /*1*/)
-                decodeShita1(p2,L,codeMem,chart,extApperance,lineCounter,errorFlag);
-            else if (shita==REGISTER   /*3*/)
-                decodeShita3(p2,true,L,codeMem,chart);
+        temp = strtok(NULL," ,\t");
+        if(temp){  /*if ther's another token after the last one than it's an error*/
+            *errorFlag=true;
+            printf("ERROR: (line:%d) too many operands !\n",lineCounter);
+        }else{
+            printf("\t2op group: p1:%s ,p2:%s\n",p1,p2);
+            shita = token2op(p1);
+            opword->src = token2op(p1);
+            opword->dst = token2op(p2);        
+            codeMem[(*L)++] = opWord2int(opword);
+            if (shita == REGISTER && token2op(p2)==REGISTER)
+                decodeTwoRegs(p1,p2,L,codeMem,chart);
+            else{
+                if(shita==IMMIDIATE /*0*/)
+                decodeShita0(p1,L,codeMem,chart);
+                else if(shita==LABLE   /*1*/)
+                    decodeShita1(p1,L,codeMem,chart, extApperance,lineCounter,errorFlag);
+                else if (shita==REGISTER   /*3*/)
+                    decodeShita3(p1,false,L,codeMem,chart);
+                shita = token2op(p2);
+                if(shita==IMMIDIATE /*0*/)
+                decodeShita0(p2,L,codeMem,chart);
+                else if(shita==LABLE   /*1*/)
+                    decodeShita1(p2,L,codeMem,chart,extApperance,lineCounter,errorFlag);
+                else if (shita==REGISTER   /*3*/)
+                    decodeShita3(p2,true,L,codeMem,chart);
+            }
         }
     }else if(opNum==8 || opNum==9 || opNum==10 || opNum==13){  /*jmp group: only lable or lable w\ 2 parameters*/
         lbl = strtok(NULL, " (");
-        if(isStringCont(strstr(copyLine,lbl), strlen(lbl) )){ /*if line continues after the lable then expect (par1,par2)*/
+        /*if line continues after the lable then expect (par1,par2)*/
+        if(isStringCont(strstr(copyLine,lbl), strlen(lbl) )){ 
             p1= strtok(NULL,",");
-            p2 = strtok(NULL,",)");
-            opword->par1=shitaNum2parNum(token2op(p1));
-            opword->par2=shitaNum2parNum(token2op(p2));
-            opword->dst=2;            
-            codeMem[(*L)++]=opWord2int(opword);
-            decodeShita1(lbl,L,codeMem,chart,extApperance,lineCounter,errorFlag);
-            decodeShita2(p1,p2,L,codeMem,chart,extApperance,lineCounter,errorFlag);
+            p2 = strtok(NULL,",)"); 
+            temp = strtok(NULL," ,\t");                       
+            if(!p2){  /*if the second op is empty than lable + one op is illeagle*/
+                *errorFlag=true;
+                printf("ERROR: (line:%d)  too many operands!\n",lineCounter);
+            }else{                
+                opword->par1=shitaNum2parNum(token2op(p1));
+                opword->par2=shitaNum2parNum(token2op(p2));
+                opword->dst=2;            
+                codeMem[(*L)++]=opWord2int(opword);
+                decodeShita1(lbl,L,codeMem,chart,extApperance,lineCounter,errorFlag);
+                decodeShita2(p1,p2,L,codeMem,chart,extApperance,lineCounter,errorFlag);
+            }
         }else{  /*don't expect more parameters after lable*/
-            opword->dst=1;
-            opword->par1=0;
-            opword->par2=0;            
-            codeMem[(*L)++]=opWord2int(opword);
-            decodeShita1(lbl,L,codeMem,chart,extApperance,lineCounter,errorFlag);
+            if(!temp){  /*if ther's another token after the last one than it's an error*/
+                *errorFlag=true;
+                printf("ERROR: (line:%d) )too many operands !\n",lineCounter);
+                printf("line: %s \tOP: %s\n",copyLine,opsB[opNum]);
+            }else{
+                opword->dst=1;
+                opword->par1=0;
+                opword->par2=0;                            
+                codeMem[(*L)++]=opWord2int(opword);
+                decodeShita1(lbl,L,codeMem,chart,extApperance,lineCounter,errorFlag);
+            }
         }
     }
     free(opword);

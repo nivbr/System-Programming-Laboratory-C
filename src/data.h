@@ -14,6 +14,7 @@ enum fileTypes{original,afterMacro, entries, externals};
 
 enum attributes{external,entry,code,data};
 
+/*an int is always smaller than word-size so the assembler will always be able to deocde opWord to int and back without  overflow*/
 typedef struct OpWord{
     unsigned int ERA:2;
     unsigned int src:2;

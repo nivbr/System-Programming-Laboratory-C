@@ -49,6 +49,7 @@ bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSiz
     while(fgets(cur_line,LINE_LENGTH,readFP)){  /*foreach line in the file*/
         strip_extra_spaces(cur_line);        
         doLine1(cur_line,&IC,&DC,chart,dataMem,&errorFlag,++lineCounter);
+        memset(cur_line,0,strlen(cur_line));
     }
     fclose(readFP);
     *codeMemSize=IC;
@@ -207,6 +208,7 @@ bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int data
     while(fgets(cur_line,LINE_LENGTH,readFP)){  /*foreach line in the file*/
         strip_extra_spaces(cur_line);
         doLine2(cur_line,&IC,&DC,chart,extApperance,codeMem,&errorFlag,++lineCounter);
+        memset(cur_line,0,strlen(cur_line));
     }
     fclose(readFP);
     printf("\t>End Pass 2 [%s]\n\n",filename);
@@ -241,12 +243,14 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* ex
         token = strtok(NULL," ");
         clearString(token);
         line = searchSymbol(chart, token);
-        if(!line || line->attributes[external]){
+        if(!line || line->attributes[external]){    /*don't let external also be entry*/
             printf("ERROR: (line:%d) Cannot define lable as both .entery and .exter!\n",lineCounter);
             *errorFlag=true;
         }
         else
             line->attributes[entry]=true;
-    }else  /*complete the coding and procseed L*/
+    }else{  /*complete the coding and procseed L*/
+        printf("Decode line: %d- %s\n",lineCounter,copy_line);
         decode(copy_line,symbolFlag,chart,extApperance,IC,codeMem,lineCounter,errorFlag);
+    }
 }
