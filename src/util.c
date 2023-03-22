@@ -1,10 +1,12 @@
 #include "util.h"
 
 char ops[OP_COUNT][OP_MAX_LENGTH]={{"mov"},{"cmp"},{"add"},{"sub"},{"not"},{"clr"},{"lea"},{"inc"},{"dec"},{"jmp"},{"bne"},{"red"},{"prn"},{"jsr"},{"rts"},{"stop"}};
-
+/*returns true if number is written legally (rounded)*/
 bool checkNum(double num);
+/*returns true if token stands for legall register number*/
 bool regIsCorrect(char token[LINE_LENGTH]);
 
+/*clear string from leading/+finishing whitespaces*/
 void clearString(char * s){
     int i,start=0,finish=strlen(s);
     char temp[81]="";
@@ -25,6 +27,7 @@ void clearString(char * s){
     s[i]='\0';  /*?????*/
 }
 
+/*create new symbol(=line) in symbol chart*/
 Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute[4]){
     int i;
     Line* line = (Line *)malloc(sizeof(Line));
@@ -41,6 +44,7 @@ Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute
     return line;
 }
 
+/*returns true if string is empty*/
 bool stringIsEmpty(char* s){
     int i;
     if(!s)
@@ -51,6 +55,7 @@ bool stringIsEmpty(char* s){
     return true;
 }
 
+/*debugging*/
 void printMemPic(int mem[MEMORY_SIZE],int size, const char* headline){
     int i;
     printf("\t--%s memory map--\n",headline);
@@ -59,6 +64,7 @@ void printMemPic(int mem[MEMORY_SIZE],int size, const char* headline){
     printf("\t----------------------\n\n");
 }
 
+/*calculate how many words this line of original code is gonna take evantually in memory, used by pass1*/
 int calcL(char line[LINE_LENGTH], bool startWLable, bool* errorFlag, int lineCounter){
     int i,cur_op=0;
     char *temp = NULL;
@@ -115,6 +121,7 @@ int calcL(char line[LINE_LENGTH], bool startWLable, bool* errorFlag, int lineCou
     return 4; /*at least one parameter isn't reg then 2 last will take 2 more lines*/
 
 }
+/*returns true if token stands for legall register number*/
 bool regIsCorrect(char token[LINE_LENGTH]){
     if(token[0]=='r'&&token[1]>='0'&&token[1]<='7' &&! isStringCont(token,2))
        return true;
@@ -137,10 +144,12 @@ int token2op(char token[LINE_LENGTH]){
     return LABLE;
 }
 
+/*converte word from opword structure to int*/
 int opWord2int(OpWord* word){
     return word->ERA+ 4*word->dst+ 16*word->src+ 64*word->opcode+ 1024*word->par2+ 4096*word->par1;
 }
 
+/*returns true if the string s continues (with non whitespaces) after index 'from'*/
 bool isStringCont(char* s, int from){
     int i;
     if(!s)  /*on null string*/
@@ -155,6 +164,7 @@ bool isStringCont(char* s, int from){
     return false;
 }
 
+/*writes the special binary of the word to output file .ob by int representation*/
 void decode_binary(int num, FILE* fp){
     unsigned int mask = 1u << 13;  /* create a mask with the leftmost bit set*/
     int i;
@@ -168,6 +178,7 @@ void decode_binary(int num, FILE* fp){
     fprintf(fp,"\n");
 }
 
+/*creates .ent file named filename.ent from the rellevant symbolchart*/
 void createEntFile(char* filename, symbolChart* chart){
     int i,len=0,c=0,size = chart->size;
     char name[LINE_LENGTH]="";
@@ -196,6 +207,7 @@ void createEntFile(char* filename, symbolChart* chart){
     fclose(fp);
 }
 
+/*creates .ext file named filename.ext from the rellevant list of externals*/
 void createExtFile(char* filename, LinkedList* extApperance){
     int len=0;
     char name[LINE_LENGTH]="";
@@ -222,6 +234,7 @@ void createExtFile(char* filename, LinkedList* extApperance){
     fclose(fp);
 }
 
+/*creates .ob  file named filename.ob from the memory picture built along the parsing*/
 void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[MEMORY_SIZE], int dataMem[MEMORY_SIZE]){
     int i;
     char name[LINE_LENGTH]="";
@@ -261,6 +274,7 @@ bool isSymbolError(char* symbol){
     return false;
 }
 
+/*strips tabs and spaces from given string to singular space for each bulk*/
 void strip_extra_spaces(char* str) {
   int i, x;
   for(i=x=0; str[i]; ++i)
@@ -269,6 +283,7 @@ void strip_extra_spaces(char* str) {
   str[x] = '\0';  
 }
 
+/*for debugging*/
 void print_binary(int num){
     unsigned int mask = 1u << 13;  /* create a mask with the leftmost bit set*/
     int i;
@@ -292,13 +307,11 @@ bool checkString(char s[LINE_LENGTH]){
     return false;
 }
 
+/*returns true of data given is legal*/
 bool checkData(char token[LINE_LENGTH]){
-    printf("DEBUG\n");
     while(!stringIsEmpty(token)){            
         if(checkNum(atof(token))){
-            printf("B\n");
             token = strtok(NULL,", \t");
-            printf("A\n");
         }else 
             return false;
     }

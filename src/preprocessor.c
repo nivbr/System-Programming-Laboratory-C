@@ -10,6 +10,7 @@ bool doFile(char* filename, hashTable* table);              /*pre processing per
 void changeFileType(char* filename);                        /*changes file type from .as to .am*/
 char* pushToMacroVal(char* cur, char* new);                 /*add chars into the string which holds macro value*/
 
+/*does the preoricessing, returns true if all went OK*/
 bool prePro(char**  filesLists[4], int howManyFiles[4]){
     int i;
     hashTable table;
@@ -30,7 +31,8 @@ bool prePro(char**  filesLists[4], int howManyFiles[4]){
     return true;
 }
 
-bool doFile(char* filename, hashTable* table){  /*returns true if file needs to be created*/
+/*returns true if file needs to be created*/
+bool doFile(char* filename, hashTable* table){  
     bool inMacro = false;
     char* newFileName=NULL;
     char tempMacroName [LINE_LENGTH] = {0};
@@ -86,7 +88,7 @@ bool doFile(char* filename, hashTable* table){  /*returns true if file needs to 
     free(newFileName);
     return true;
 }
-
+/*changes file type from .as to .am*/
 void changeFileType(char* filename){
     int length = strlen(filename);
     filename[length-3]='.';
@@ -94,6 +96,7 @@ void changeFileType(char* filename){
     filename[length-1]='m';
 }
 
+/*add chars into the string which holds macro value*/
 char * pushToMacroVal(char* cur, char* new){
     if(!new)
         return cur;

@@ -11,6 +11,7 @@ void decodeShita3(char* word, bool dst,int* L, int codeMem[MEMORY_SIZE], symbolC
 int shitaNum2parNum(int shita);
 void decodeTwoRegs(char* reg1, char* reg2,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart);
 
+/*decode the line and write it to mem*/
 void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedList* extApperance, int *L, int codeMem[MEMORY_SIZE],int lineCounter, bool * errorFlag){
     int i,opNum=-1,shita=-1;
     char* token = NULL, *lbl = NULL, *p1=NULL, *p2=NULL;
@@ -52,12 +53,22 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
             shita = token2op(token);
             opword->dst= shita;        
             codeMem[(*L)++] = opWord2int(opword);
-            if(shita==IMMIDIATE /*0*/)
-                decodeShita0(token,L,codeMem,chart);
+            if(shita==IMMIDIATE /*0*/){
+                if(opNum==12)
+                    decodeShita0(token,L,codeMem,chart);
+                else{
+                    *errorFlag=true;
+                    printf("ERROR: (line:%d) operand illegal to this function !\n",lineCounter);
+                }
+            }
             else if(shita==LABLE   /*1*/)
                 decodeShita1(token,L,codeMem,chart, extApperance,lineCounter,errorFlag);
             else if (shita==REGISTER   /*3*/)
                 decodeShita3(token,true,L,codeMem,chart);
+            else{
+                *errorFlag=true;
+                printf("ERROR: (line:%d) too many operands !\n",lineCounter);
+            }
         }
     }else if((opNum>=0 && opNum<=3) || opNum==6){     /*2 operands group*/
         p1 = strtok(NULL, " ,\t");  /*\t*/
@@ -76,18 +87,28 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
                 decodeTwoRegs(p1,p2,L,codeMem,chart);
             else{
                 if(shita==IMMIDIATE /*0*/)
-                decodeShita0(p1,L,codeMem,chart);
+                    decodeShita0(p1,L,codeMem,chart);
                 else if(shita==LABLE   /*1*/)
                     decodeShita1(p1,L,codeMem,chart, extApperance,lineCounter,errorFlag);
                 else if (shita==REGISTER   /*3*/)
                     decodeShita3(p1,false,L,codeMem,chart);
                 shita = token2op(p2);
-                if(shita==IMMIDIATE /*0*/)
-                decodeShita0(p2,L,codeMem,chart);
+                if(shita==IMMIDIATE /*0*/){
+                    if(opNum==1)
+                        decodeShita0(p2,L,codeMem,chart);
+                    else{
+                        *errorFlag=true;
+                        printf("ERROR: (line:%d) operand illegal to this function !\n",lineCounter);
+                    }
+                }
                 else if(shita==LABLE   /*1*/)
                     decodeShita1(p2,L,codeMem,chart,extApperance,lineCounter,errorFlag);
                 else if (shita==REGISTER   /*3*/)
                     decodeShita3(p2,true,L,codeMem,chart);
+                else{
+                    *errorFlag=true;
+                    printf("ERROR: (line:%d) operands do NOT match function !\n",lineCounter);
+                }
             }
         }
     }else if(opNum==8 || opNum==9 || opNum==10 || opNum==13){  /*jmp group: only lable or lable w\ 2 parameters*/
@@ -124,7 +145,7 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
     }
     free(opword);
 }
-
+/*decode the obvious part of the word*/
 void decodeObv(OpWord *opword, int opNum){
     opword->opcode=opNum;
     opword->ERA=0;
@@ -137,7 +158,6 @@ void decodeObv(OpWord *opword, int opNum){
     if(opNum>=14)   /*group 3: 0 ops, regardless shitat miun*/
         opword->dst=0;
 }
-
 /*immidiate (#num)*/
 void decodeShita0(char* word,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
     word++;
@@ -217,7 +237,7 @@ void decodeTwoRegs(char* reg1, char* reg2,int *L, int codeMem[MEMORY_SIZE], symb
     print_binary(4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1));
     codeMem[(*L)++] = 4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1);
 }
-
+/*converte */
 int shitaNum2parNum(int shita){
     if(shita==REGISTER /*3*/)
         return 3;

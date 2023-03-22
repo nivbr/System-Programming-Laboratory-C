@@ -6,6 +6,7 @@ bool prePro(char**  filesLists[4], int howManyFiles[4]);
 bool pass(char** filesList[4],int listCounters[4]);
 void distract(char** filesList[4],int ListCounters[4]);
 
+/*main assembler function to be called to start the program*/
 int main(int argc, char **argv){
 
 	char** filesLists[4]={0};
@@ -20,6 +21,7 @@ int main(int argc, char **argv){
 	return true;
 }
 
+/*free all file name strings*/
 void distract(char** filesList[4],int ListCounters[4]){
 	int i,j;
 	printf("---Start Distraction--- \n");

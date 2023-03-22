@@ -7,6 +7,7 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* ex
 bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSize,  int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
 bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
 
+/*takes care of the whole parsing process (pass1,pass2,creating ouput files)*/
 bool pass(char** filesList[4],int listCounters[4]){
     symbolChart * chart;
     LinkedList * extApperance;
@@ -38,6 +39,7 @@ bool pass(char** filesList[4],int listCounters[4]){
     return true;
 }
 
+/*first pass, returns true if no error accured and parsing proccess should continue*/
 bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSize,  int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
     char cur_line[LINE_LENGTH]= "";  /*holds current line*/
     int IC=0,DC=0, lineCounter=0;
@@ -64,6 +66,7 @@ bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSiz
     return true;
 }
 
+/*takes care of parsing a line in the first pass*/
 void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[MEMORY_SIZE], bool * errorFlag, int lineCounter){
     Line * line = NULL;
     bool atr[4] = {false,false,false,false}, symbolFlag= false;   /*errorFlag is on if errors found- the pass2 won't happen*/
@@ -210,6 +213,7 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
     return;
 }
 
+/*second pass, returns true if no error accured and parsing proccess should continue*/
 bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]){
     char cur_line[LINE_LENGTH]= "";  /*holds current line*/
     int IC=0,DC=0,lineCounter=0;
@@ -230,6 +234,7 @@ bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int data
     return true;
 }
 
+/*takes care of parsing a line in the first pass*/
 void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* extApperance, int codeMem[MEMORY_SIZE], bool * errorFlag,int lineCounter){
     Line * line = NULL;
     char* token = NULL;

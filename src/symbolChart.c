@@ -17,7 +17,8 @@ symbolChart* newSymbolChart(){    /*Constructor func*/
     return chart;
 }
 
-void deleteSymbolChart(symbolChart* chart){ /*distructor func*/
+ /*distructor func*/
+void deleteSymbolChart(symbolChart* chart){
     int i;
     Line** lnptr;
     if (!chart)        
@@ -30,7 +31,7 @@ void deleteSymbolChart(symbolChart* chart){ /*distructor func*/
     free(chart);
 }
 
-    /*Insert new row to chart*/
+/*Insert new row to chart*/
 void insertSymbol(Line* line, symbolChart* chart){    
     if((chart->size) >= chart->maxSize){     /*if current array is full -> double it's size up*/
         chart->maxSize*=2;
@@ -44,7 +45,8 @@ void insertSymbol(Line* line, symbolChart* chart){
     chart->linesArray[chart->size] = line;  /*connect new row to table*/
     chart->size++;  /*increrase size because new row have enterd*/
 }
-    /*search symbol in table -> return it's row*/
+
+/*search symbol in table -> return it's row*/
 Line* searchSymbol(symbolChart* chart, char* lookup){   /*search symbol in table -> return it's row*/
     int i;
     for(i=0;i<chart->size;i++)
@@ -53,6 +55,7 @@ Line* searchSymbol(symbolChart* chart, char* lookup){   /*search symbol in table
     return NULL;
 }
 
+/*debug print the whole chart*/
 void printSymbolChart(symbolChart* chart){ 
     int i;
     if(!chart || !(chart->size) )   /*if chart is empty - don't print*/
@@ -65,6 +68,7 @@ void printSymbolChart(symbolChart* chart){
     printf("\t>End of Symbol Chart \n\n");
 }
 
+/*debug print line*/
 void printLine(Line* line){ 
     if(!line){
         printf("\t\tLine is empty !\n");
@@ -79,6 +83,7 @@ void printLine(Line* line){
     printf("\n");
 }
 
+/*debug print attributes*/
 void printAtributtes(bool arr[4]){  
     int i;
     printf("|Atributtes: ");
@@ -110,6 +115,7 @@ void printAtributtes(bool arr[4]){
         }
 }
 
+/*returns chart size*/
 int getChartSize(symbolChart* chart){
     if(!chart){
         printf("ERROR: chart is empty!");
@@ -118,6 +124,7 @@ int getChartSize(symbolChart* chart){
     return chart->size;
 }
 
+/*updates data base adress by the end of code memory picture*/
 void updateDataByIC(symbolChart* chart, int IC){
     int i;
     for(i=0;i<getChartSize(chart);i++)

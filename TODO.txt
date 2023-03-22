@@ -1,12 +1,9 @@
 generally:
-	_handle errors.
+	_write errors to stdout
 	_use exit(1) on failed malloc()
 
 symbolChart:
 	_make sure resizing works good.
-
-error cathing:
-	_type of operands is legal
 	
 *valgrind command:
 	valgrind --leak-check=yes ./assembler exampletest
