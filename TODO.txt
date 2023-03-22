@@ -7,9 +7,6 @@ symbolChart:
 
 error cathing:
 	_type of operands is legal
-	_number
-	_string
-	
 	
 *valgrind command:
 	valgrind --leak-check=yes ./assembler exampletest

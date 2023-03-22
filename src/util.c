@@ -2,6 +2,7 @@
 
 char ops[OP_COUNT][OP_MAX_LENGTH]={{"mov"},{"cmp"},{"add"},{"sub"},{"not"},{"clr"},{"lea"},{"inc"},{"dec"},{"jmp"},{"bne"},{"red"},{"prn"},{"jsr"},{"rts"},{"stop"}};
 
+bool checkNum(double num);
 bool regIsCorrect(char token[LINE_LENGTH]);
 
 void clearString(char * s){
@@ -279,4 +280,32 @@ void print_binary(int num){
         mask >>= 1;  /* shift the mask to the right*/
     }
     printf("\n");
+}
+
+/*returns true if string is OK*/
+bool checkString(char s[LINE_LENGTH]){    
+    if(!s)
+        return false;
+    clearString(s);
+    if(s[0]=='\"' && s[strlen(s)-1]=='\"')
+        return true;
+    return false;
+}
+
+bool checkData(char token[LINE_LENGTH]){
+    printf("DEBUG\n");
+    while(!stringIsEmpty(token)){            
+        if(checkNum(atof(token))){
+            printf("B\n");
+            token = strtok(NULL,", \t");
+            printf("A\n");
+        }else 
+            return false;
+    }
+    return true;
+}
+
+/*returns true if number is integer*/
+bool checkNum(double num){
+    return (num == ((int)(num)));
 }

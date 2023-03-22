@@ -31,7 +31,8 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
     for(i=0;i<OP_COUNT;i++)    /*find the opcode field*/
         if(!strcmp(token,opsB[i]))
             opNum=i; 
-    decodeObv(opword,opNum);   /*0 operands*/
+    decodeObv(opword,opNum);   
+    /*0 operands*/
     if(opNum>=14){ /*rts,stop known because no parameters*/
         temp = strtok(NULL," ,\t");
         if(temp){  /*if ther's another token after the last one than it's an error*/

@@ -28,5 +28,7 @@ void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[ME
 bool isSymbolError(char* symbol);
 void strip_extra_spaces(char* str);
 void print_binary(int num);
+bool checkString(char s[LINE_LENGTH]);
+bool checkData(char token[LINE_LENGTH]);
 
 #endif

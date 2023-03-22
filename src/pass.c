@@ -125,31 +125,44 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
                     insertSymbol(line,chart);   /*insert to chart*/
                 }
             }
-            clearString(token);   
-            while(!stringIsEmpty(token)){                
-                dataMem[*DC]= atoi(token);
-                (*DC)++;                
-                token = strtok(NULL,",");
+            clearString(token);
+            if(checkData(token))   
+                while(!stringIsEmpty(token)){            
+                    dataMem[*DC]= atoi(token);
+                    (*DC)++;                
+                    token = strtok(NULL,",");
+                }
+            else{
+                printf("ERROR: (line:%d) string stattment is incorrect\n",lineCounter);
+                *errorFlag = true;
             }
         }
         else{ /*.string*/
-            token = strtok(NULL,", \"");   
-            if(symbolFlag){
-                symbolFlag=false;
-                if(searchSymbol(chart,symbol)){  /*if symbol already in chart*/
-                    *errorFlag=true;
-                    printf("ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);
-                }
-                else{                    
-                    atr[data]=true; /*set the attributes to to external for it to be copied*/            
-                    line = newSymbol(symbol,*DC,0,0,atr);
-                    atr[data]=false;    /*was COPIED so can be reset*/
-                    insertSymbol(line,chart);   /*insert to chart*/
-                }
-            }
-            for(i=0;i<strlen(token);i++)
+            /*token = strtok(NULL,", \"");*/
+            token = strtok(NULL, " "); /*token to be "stringletters"*/
+            if(checkString(token)){
+                token=strtok(token,", \"");
+                if(symbolFlag){
+                    symbolFlag=false;
+                    if(searchSymbol(chart,symbol)){  /*if symbol already in chart*/
+                        *errorFlag=true;
+                        printf("ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);
+                    }
+                    else{                    
+                        atr[data]=true; /*set the attributes to to external for it to be copied*/            
+                        line = newSymbol(symbol,*DC,0,0,atr);
+                        atr[data]=false;    /*was COPIED so can be reset*/
+                        insertSymbol(line,chart);   /*insert to chart*/
+                    }
+                }        
+                for(i=0;i<strlen(token);i++)
                 dataMem[(*DC)++]=token[i];
-            dataMem[(*DC)++]='\0';
+                dataMem[(*DC)++]='\0';        
+            }
+            else{
+                printf("ERROR: (line:%d) string decleraion is incorrect\n",lineCounter);
+                *errorFlag=true;
+            }                                        
         }
     /*external (OK to assume: no lables before)*/        
     }else if(!strcmp(token,".extern")){ 
