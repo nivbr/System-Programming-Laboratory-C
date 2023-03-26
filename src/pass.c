@@ -57,11 +57,8 @@ bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSiz
     *codeMemSize=IC;
     *dataMemSize=DC;
     printf("\t>End Pass 1 [%s]\n\n",filename);
-    if(errorFlag){
-        printf("\tERRORS ACUURED!\n");
+    if(errorFlag)
         return false;
-    }
-    printf("\tNO ERRORS!\n");
     updateDataByIC(chart,IC);
     return true;
 }
@@ -102,8 +99,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
         if (symbolFlag){    /*sure 'code' attribute is OK?*/
             symbolFlag=false;
             if(searchSymbol(chart,symbol)){  /*if symbol already in chart*/
-                *errorFlag=true;
-                printf("ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);
+                *errorFlag=true;                
+                fprintf(stdout,"ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);                
             }
             else{
                 atr[data]=true; /*set the attributes to to external for it to be copied*/            
@@ -118,8 +115,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
             if(symbolFlag){
                 symbolFlag=false;
                 if(searchSymbol(chart,symbol)){  /*if symbol already in chart*/
-                    *errorFlag=true;
-                    printf("ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);
+                    *errorFlag=true;                    
+                    fprintf(stdout,"ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);                                        
                 }
                 else{
                     atr[data]=true; /*set the attributes to to external for it to be copied*/            
@@ -135,8 +132,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
                     (*DC)++;                
                     token = strtok(NULL,",");
                 }
-            else{
-                printf("ERROR: (line:%d) string stattment is incorrect\n",lineCounter);
+            else{                
+                fprintf(stdout,"ERROR: (line:%d) string stattment is incorrect\n",lineCounter);                
                 *errorFlag = true;
             }
         }
@@ -148,8 +145,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
                 if(symbolFlag){
                     symbolFlag=false;
                     if(searchSymbol(chart,symbol)){  /*if symbol already in chart*/
-                        *errorFlag=true;
-                        printf("ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);
+                        *errorFlag=true;                        
+                        fprintf(stdout,"ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);                        
                     }
                     else{                    
                         atr[data]=true; /*set the attributes to to external for it to be copied*/            
@@ -162,8 +159,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
                 dataMem[(*DC)++]=token[i];
                 dataMem[(*DC)++]='\0';        
             }
-            else{
-                printf("ERROR: (line:%d) string decleraion is incorrect\n",lineCounter);
+            else{                
+                fprintf(stdout,"ERROR: (line:%d) string decleraion is incorrect\n",lineCounter);                
                 *errorFlag=true;
             }                                        
         }
@@ -176,8 +173,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
         line = newSymbol(token,0,0,0,atr);
         atr[external]=false;    /*was COPIED so can be reset*/
         if(searchSymbol(chart,token)){    /*if symbol already anounced*/
-            *errorFlag=true;
-            printf("ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);
+            *errorFlag=true;            
+            fprintf(stdout,"ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);            
         }
         else
             insertSymbol(line,chart);   /*insert to chart*/
@@ -187,8 +184,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
     }else{  /*just code*/
         if(symbolFlag){
             if(searchSymbol(chart,symbol)){  /*if symbol already in chart*/
-                *errorFlag=true;
-                printf("ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);
+                *errorFlag=true;                
+                fprintf(stdout,"ERROR: (Line #%d) symbol:[%s] ALLREADY ANNOUNCED!\n",lineCounter,symbol);                
             }
             else{
                 atr[code]=true; /*set the attributes to to external for it to be copied*/            
@@ -204,8 +201,8 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
         if(i<OP_COUNT)
             L = calcL(copy_line,symbolFlag,errorFlag,lineCounter);        
         else{
-            *errorFlag=true;    /*add error treatment*/
-            printf("ERROR: (Line #%d) op:[%s] NOT FOUND!\n",lineCounter,token);
+            *errorFlag=true;    /*add error treatment*/            
+            fprintf(stdout,"ERROR: (Line #%d) op:[%s] NOT FOUND!\n",lineCounter,token);            
         }
         (*IC) += L;
         symbolFlag = false;        
@@ -261,14 +258,12 @@ void doLine2(char* cur_line,int* IC, int* DC, symbolChart * chart,LinkedList* ex
         token = strtok(NULL," ");
         clearString(token);
         line = searchSymbol(chart, token);
-        if(!line || line->attributes[external]){    /*don't let external also be entry*/
-            printf("ERROR: (line:%d) Cannot define lable as both .entery and .exter!\n",lineCounter);
+        if(!line || line->attributes[external]){    /*don't let external also be entry*/            
+            fprintf(stdout,"ERROR: (line:%d) Cannot define lable as both .entery and .exter!\n",lineCounter);            
             *errorFlag=true;
         }
         else
             line->attributes[entry]=true;
-    }else{  /*complete the coding and procseed L*/
-        printf("Decode line: %d- %s\n",lineCounter,copy_line);
-        decode(copy_line,symbolFlag,chart,extApperance,IC,codeMem,lineCounter,errorFlag);
-    }
+    }else  /*complete the coding and procseed L*/
+        decode(copy_line,symbolFlag,chart,extApperance,IC,codeMem,lineCounter,errorFlag);    
 }

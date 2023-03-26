@@ -10,8 +10,8 @@ void deleteRaw(hashNode* head);
 int hash(const char* key) {	/*hash function returns sum of two first char ascii % HASH_KEY_SIZE*/
    int ret=1,i;
 	if(key==NULL){
-		printf("Oops your'e looking for an empty string! \n");			
-		exit(0);
+		fprintf(stdout,"Oops your'e looking for an empty string! \n");		
+		exit(1);
 	}
    for(i=0;i<2 && i<strlen(key);i++)
 		ret*=(int)(key[i]);
@@ -35,14 +35,14 @@ void insertItem(const char* key ,const char* value, hashTable *table) {
     hashNode* node = (hashNode *)malloc(sizeof(hashNode)); /*alocate space for node itself*/
 
 	if (node==NULL){
-		printf("Aloocation Error ! - add free \n");
+		fprintf(stdout,"Aloocation Error !\n");		
 		deleteTable(table);
 		exit(1);
 	}
 	/*fill key fields*/
     node->key = (char*)malloc((sizeof(char))*(strlen(key) ) );		/*? (char*)malloc((sizeof(char))*(strlen(key)+1 ) )?*/
-	if(node->key == NULL){
-		printf("Aloocation Error !\n");
+	if(node->key == NULL){		
+		fprintf(stdout,"Aloocation Error !\n");		
 		free(node);
 		deleteTable(table);
 		exit(1);
@@ -51,7 +51,7 @@ void insertItem(const char* key ,const char* value, hashTable *table) {
 	/*fill value field*/
 	node->value = (char*)malloc((sizeof(char))*(strlen(value) ));	
 	if(node->value == NULL){
-		printf("Aloocation Error ! - add free \n");
+		fprintf(stdout,"Aloocation Error ! - add free \n");		
 		free(node);
 		deleteTable(table);
 		exit(1);

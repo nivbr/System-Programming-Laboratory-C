@@ -32,7 +32,7 @@ Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute
     int i;
     Line* line = (Line *)malloc(sizeof(Line));
     if (!line){
-        printf("alocation error !\n");
+        fprintf(stdout,"Alocation error !\n");                
         exit(1);
     }
     strcpy(line->symbol,symbol);
@@ -86,14 +86,14 @@ int calcL(char line[LINE_LENGTH], bool startWLable, bool* errorFlag, int lineCou
     if(cur_op<=3){  /*ops 0/1/2/3*/
         token = strtok(NULL,",");   /*get paramter*/
         if(token2op(token) == REGISTER){   /*if the parameter is register*/
-            if(!regIsCorrect(token)){
-                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);
+            if(!regIsCorrect(token)){                
+                fprintf(stdout,"ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);                
                 *errorFlag=true;
             }
             token = strtok(NULL,","); /*get next parameter*/            
             if(token2op(token) == REGISTER){
-                if(!regIsCorrect(token)){
-                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);
+                if(!regIsCorrect(token)){                
+                fprintf(stdout,"ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);                
                 *errorFlag=true;
                 }
                 return 2;   /*both parameters registers -2 lines*/
@@ -108,12 +108,12 @@ int calcL(char line[LINE_LENGTH], bool startWLable, bool* errorFlag, int lineCou
     if(!temp)  /*no parameters besides the lable*/
         return 2;   /*1 line only- for lable */
     if(token2op(temp)==REGISTER && token2op(token)==REGISTER){ /*both parameters are registers*/
-        if(!regIsCorrect(token)){
-                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);
+        if(!regIsCorrect(token)){                
+                fprintf(stdout,"ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,token);                
                 *errorFlag=true;
         }
-        if(!regIsCorrect(temp)){
-                printf("ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,temp);
+        if(!regIsCorrect(temp)){                
+                fprintf(stdout,"ERROR: (Line #%d) reg:[%s] is not legal!\n",lineCounter,temp);                
                 *errorFlag=true;
         }
         return 3;
@@ -154,13 +154,9 @@ bool isStringCont(char* s, int from){
     int i;
     if(!s)  /*on null string*/
         return false;
-    for(i=from;i<strlen(s);i++){
-        if(isalnum(s[i])){
-            /*printf("string continues: %s\n",s);*/
+    for(i=from;i<strlen(s);i++)
+        if(isalnum(s[i]))
             return true;
-        }
-    }
-    /*printf("string from[%d] not continues: %s\n",from,s);*/
     return false;
 }
 
@@ -197,8 +193,8 @@ void createEntFile(char* filename, symbolChart* chart){
     name[len]='t';
     name[len+1]='\0';
     fp = fopen(name,"w");    
-    if (fp == NULL) {
-        printf("Error: could not open file %s\n", filename);
+    if (fp == NULL) {        
+        fprintf(stdout,"Error: could not open file %s\n", filename);        
         return;
     }
     for(i=0;i<size;i++)
@@ -222,8 +218,8 @@ void createExtFile(char* filename, LinkedList* extApperance){
     if(listIsEmpty(extApperance))
         return;
     fp = fopen(name,"w");    
-    if (fp == NULL) {
-        printf("Error: could not open file %s\n", filename);
+    if (fp == NULL) {        
+        fprintf(stdout,"Error: could not open file %s\n", filename);        
         return;
     }
     ptr = extApperance->head;
@@ -243,8 +239,8 @@ void createObFile(char* filename, int codeMemSize,int dataMemSize,int codeMem[ME
     name[strlen(filename)-2]='o';
     name[strlen(filename)-1]='b';
     fp = fopen(name,"w");    
-    if (fp == NULL) {
-        printf("Error: could not open file %s\n", filename);
+    if (fp == NULL) {        
+        fprintf(stdout,"Error: could not open file %s\n", filename);        
         return;
     }
     fprintf(fp,"%d %d\n",codeMemSize,dataMemSize);

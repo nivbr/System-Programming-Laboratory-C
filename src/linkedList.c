@@ -15,12 +15,12 @@ LinkedList* newList(){
 void addToList(char name[LINE_LENGTH], int line, LinkedList* list){
     ListNode * node = (ListNode*)malloc(sizeof(ListNode)); 
     ListNode * temp = NULL;
-    if(!node){
-        printf("Alocation Error !\n");
+    if(!node){    
+        fprintf(stdout,"Alocation Error !\n");        
         exit(1);
     }
-    if(!list){
-        printf("Error! no such list !\n");
+    if(!list){        
+        fprintf(stdout,"Error! no such list !\n");        
         return;
     }
     if(list->head==NULL)

@@ -7,8 +7,8 @@ void printAtributtes(bool arr[4]);          /*helps printline()*/
 symbolChart* newSymbolChart(){    /*Constructor func*/
     symbolChart* chart = (symbolChart *)malloc(sizeof(symbolChart));    
     chart->linesArray = (Line**)calloc(INIT_LINES_CNT,sizeof(Line*)); /*fill all fields*/
-    if(chart->linesArray==NULL){
-        printf("Alocation Error !\n");
+    if(chart->linesArray==NULL){        
+        fprintf(stdout,"Alocation Error !\n");        
         deleteSymbolChart(chart);
         exit(1);
     }
@@ -36,8 +36,8 @@ void insertSymbol(Line* line, symbolChart* chart){
     if((chart->size) >= chart->maxSize){     /*if current array is full -> double it's size up*/
         chart->maxSize*=2;
         chart->linesArray = (Line**)realloc(chart->linesArray,(sizeof(Line*)*(chart->maxSize)) );
-        if(chart->linesArray==NULL){
-            printf("Alocation Error !(insert symbol)\n");
+        if(chart->linesArray==NULL){            
+            fprintf(stdout,"Alocation Error !(insert symbol)\n");            
             deleteSymbolChart(chart);
             exit(0);
         }
@@ -117,8 +117,8 @@ void printAtributtes(bool arr[4]){
 
 /*returns chart size*/
 int getChartSize(symbolChart* chart){
-    if(!chart){
-        printf("ERROR: chart is empty!");
+    if(!chart){        
+        fprintf(stdout,"ERROR: chart is empty!\n");        
         return 0;
     }
     return chart->size;

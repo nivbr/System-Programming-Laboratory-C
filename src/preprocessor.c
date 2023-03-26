@@ -16,10 +16,9 @@ bool prePro(char**  filesLists[4], int howManyFiles[4]){
     hashTable table;
     printf(">Pre Proccessor \n");   /*debug print*/
     filesLists[afterMacro]=(char**)malloc((sizeof(char *))*howManyFiles[original]);     /*change to char* instead of char** ? */
-    if(!filesLists[afterMacro]){
-        printf("Alocation Error !\n");
+    if(!filesLists[afterMacro]){        
+        fprintf(stdout,"Alocation Error !\n");        
         exit(1);
-        /*handle error better !*/
     }
     for(i=0;i<howManyFiles[original];i++)
         if(doFile(filesLists[original][i], &table)){ /*update return list of .am files*/
@@ -45,8 +44,8 @@ bool doFile(char* filename, hashTable* table){
         return false;   /* ^ file doesn't exist*/
     /*file do exist-> create new file with .am type*/
     newFileName = (char*)malloc(sizeof(char)*strlen(filename));
-    if(!newFileName){
-        printf("alocation error ! \n");
+    if(!newFileName){        
+        fprintf(stdout,"Alocation error ! \n");        
         fclose(readFP);
         exit(1);
     }
