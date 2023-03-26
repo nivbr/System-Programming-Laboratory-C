@@ -37,15 +37,15 @@ void insertItem(const char* key ,const char* value, hashTable *table) {
 	if (node==NULL){
 		printf("Aloocation Error ! - add free \n");
 		deleteTable(table);
-		exit(0);
+		exit(1);
 	}
 	/*fill key fields*/
     node->key = (char*)malloc((sizeof(char))*(strlen(key) ) );		/*? (char*)malloc((sizeof(char))*(strlen(key)+1 ) )?*/
 	if(node->key == NULL){
-		printf("Aloocation Error ! - add free \n");
+		printf("Aloocation Error !\n");
 		free(node);
 		deleteTable(table);
-		exit(0);
+		exit(1);
 	}
 	strcpy(node->key, key);
 	/*fill value field*/
@@ -54,7 +54,7 @@ void insertItem(const char* key ,const char* value, hashTable *table) {
 		printf("Aloocation Error ! - add free \n");
 		free(node);
 		deleteTable(table);
-		exit(0);
+		exit(1);
 	}
 	strcpy(node->value, value);
 	/*fill next field*/

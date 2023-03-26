@@ -76,7 +76,7 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
     char copy_line[LINE_LENGTH]="";
     strcpy(copy_line,cur_line);
     token = strtok(cur_line," \t");   /*get first token*/
-    if(!strcmp(token,";") || stringIsEmpty(copy_line) || token[0]==';') /*ignore line that starts with ';'- maybe change with token[0] because can be ';blalba' and then strcmp wont return 0 */
+    if(stringIsEmpty(copy_line) || !strcmp(token,";") || token[0]==';') /*ignore line that starts with ';'- maybe change with token[0] because can be ';blalba' and then strcmp wont return 0 */
         return;
     clearString(token);
     /*if a symbol was anounced*/
@@ -208,7 +208,7 @@ void doLine1(char* cur_line,int* IC, int* DC, symbolChart * chart, int dataMem[M
             printf("ERROR: (Line #%d) op:[%s] NOT FOUND!\n",lineCounter,token);
         }
         (*IC) += L;
-        symbolFlag = false;
+        symbolFlag = false;        
     }
     return;
 }

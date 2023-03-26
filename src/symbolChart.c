@@ -10,7 +10,7 @@ symbolChart* newSymbolChart(){    /*Constructor func*/
     if(chart->linesArray==NULL){
         printf("Alocation Error !\n");
         deleteSymbolChart(chart);
-        exit(0);
+        exit(1);
     }
     chart->size=0;
     chart->maxSize=INIT_LINES_CNT;  /*initial minimal size, doubles up every time getting full*/

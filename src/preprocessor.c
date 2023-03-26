@@ -18,7 +18,7 @@ bool prePro(char**  filesLists[4], int howManyFiles[4]){
     filesLists[afterMacro]=(char**)malloc((sizeof(char *))*howManyFiles[original]);     /*change to char* instead of char** ? */
     if(!filesLists[afterMacro]){
         printf("Alocation Error !\n");
-        exit(0);
+        exit(1);
         /*handle error better !*/
     }
     for(i=0;i<howManyFiles[original];i++)
@@ -48,7 +48,7 @@ bool doFile(char* filename, hashTable* table){
     if(!newFileName){
         printf("alocation error ! \n");
         fclose(readFP);
-        exit(0);
+        exit(1);
     }
     strcpy(newFileName,filename);
     changeFileType(newFileName);

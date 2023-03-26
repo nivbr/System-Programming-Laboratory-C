@@ -33,7 +33,7 @@ Line* newSymbol(char* symbol,int value, int baseAdrs, int offset, bool attribute
     Line* line = (Line *)malloc(sizeof(Line));
     if (!line){
         printf("alocation error !\n");
-        exit(0);
+        exit(1);
     }
     strcpy(line->symbol,symbol);
     line->value = value;

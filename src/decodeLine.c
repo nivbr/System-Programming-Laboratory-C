@@ -20,7 +20,7 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
     OpWord* opword = (OpWord*)malloc(sizeof(OpWord));
     if (!opword){
         printf("Allocation Error!\n");
-        exit(0);
+        exit(1);
     }
     strcpy(copyLine,line);
     token = strtok(line, " \t");   /*initialize line to be tokened*/
