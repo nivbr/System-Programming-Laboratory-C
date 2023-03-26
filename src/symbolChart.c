@@ -1,8 +1,4 @@
-#include "symbolChart.h"
-
-    /*private functions prototypes*/
-void printLine(Line* line);      /*helps printchart()*/
-void printAtributtes(bool arr[4]);          /*helps printline()*/
+#include "symbolChart.h"    
 
 symbolChart* newSymbolChart(){    /*Constructor func*/
     symbolChart* chart = (symbolChart *)malloc(sizeof(symbolChart));    
@@ -53,66 +49,6 @@ Line* searchSymbol(symbolChart* chart, char* lookup){   /*search symbol in table
         if(!strcmp(((chart->linesArray[i])->symbol),lookup) )
             return chart->linesArray[i];                             
     return NULL;
-}
-
-/*debug print the whole chart*/
-void printSymbolChart(symbolChart* chart){ 
-    int i;
-    if(!chart || !(chart->size) )   /*if chart is empty - don't print*/
-        return;
-    printf("\n\t>Symbol Chart: \n");
-    printf("\t\tchart size: %d\n",chart->size);
-    for(i=0;i<(chart->size);i++)
-        printLine(chart->linesArray[i]);
-    printf("\t\t----------------------------------------------------------------------------------------------------\n");
-    printf("\t>End of Symbol Chart \n\n");
-}
-
-/*debug print line*/
-void printLine(Line* line){ 
-    if(!line){
-        printf("\t\tLine is empty !\n");
-        return;
-    }
-    printf("\t\t----------------------------------------------------------------------------------------------------\n");
-    printf("\t\t|Symbol: %s |",line->symbol);
-    printf("|value: %d |",line->value);
-    printf("|Base address: %d |",line->baseAdrs);
-    printf("|Offset: %d |",line->offset);
-    printAtributtes(line->attributes);
-    printf("\n");
-}
-
-/*debug print attributes*/
-void printAtributtes(bool arr[4]){  
-    int i;
-    printf("|Atributtes: ");
-    for(i=0;i<4;i++)
-        switch (i){
-            case external:
-            if(arr[i])
-                printf("external ");
-            break;
-
-            case entry:
-            if(arr[i])
-                printf("entry ");
-            break;
-            
-            case code:
-            if(arr[i])
-                printf("code ");
-            break;
-
-            case data:
-            if(arr[i])
-                printf("data ");
-            break;
-
-            default:
-                printf("\n\nmistake at atributtes ! \n\n");
-            break;
-        }
 }
 
 /*returns chart size*/

@@ -13,8 +13,7 @@ char* pushToMacroVal(char* cur, char* new);                 /*add chars into the
 /*does the preoricessing, returns true if all went OK*/
 bool prePro(char**  filesLists[4], int howManyFiles[4]){
     int i;
-    hashTable table;
-    printf(">Pre Proccessor \n");   /*debug print*/
+    hashTable table;    
     filesLists[afterMacro]=(char**)malloc((sizeof(char *))*howManyFiles[original]);     /*change to char* instead of char** ? */
     if(!filesLists[afterMacro]){        
         fprintf(stdout,"Alocation Error !\n");        
@@ -26,7 +25,6 @@ bool prePro(char**  filesLists[4], int howManyFiles[4]){
             strcpy(filesLists[afterMacro][howManyFiles[afterMacro]++],filesLists[original][i]); /*copy name + increase counter*/
             changeFileType(filesLists[afterMacro][howManyFiles[afterMacro]-1]);
         }       
-    printf(">End Of Pre Proccessor \n\n");     
     return true;
 }
 

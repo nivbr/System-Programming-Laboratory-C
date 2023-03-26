@@ -94,26 +94,6 @@ void freeNode(hashNode* node){
 	free(node);
 }
 
-void printTable(hashTable *table) {
-   int i;
-   printf("--HASH--\n");
-   for(i = 0; i<HASH_KEY_SIZE; i++) 
-	   printHashLine(table->hashArray[i]);
-	printf("--END OF HASH--\n");
-}
-
-void printHashLine(hashNode* node){
-	bool lineEmpty = true;
-	while(node!=NULL){
-		lineEmpty = false;
-		printf("(%s -> %s)",node->key,node->value);
-		if(node->next!=NULL)
-			printf(", ");
-		node = node->next;
-	}
-	if(!lineEmpty)
-		printf("\n");
-}
 
 void deleteTable(hashTable *table){
 	int i;

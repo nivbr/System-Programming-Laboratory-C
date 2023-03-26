@@ -4,7 +4,7 @@
 LinkedList* newList(){
     LinkedList* list = (LinkedList*)malloc(sizeof(LinkedList));
     if(!list){
-        printf("Alocation Error !\n");
+        fprintf(stdout,"Alocation Error !\n");
         exit(1);
     }
     list->head=NULL;
@@ -43,19 +43,6 @@ void deleteList(LinkedList* list){
         free(prev);
     }
     free(list);
-}
-
-/*print the list*/
-void printLinkedList(LinkedList* list){
-    ListNode* ptr;
-    if(!list)   /*empty list- no externals*/
-        return;
-    ptr = list->head;
-    while(ptr){
-        printf("\t\t%s %d\n",ptr->symbol,ptr->lineNum);
-        ptr = ptr->next;
-    }
-        
 }
 
 /*returns true if the list is empty*/

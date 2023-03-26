@@ -24,13 +24,9 @@ int main(int argc, char **argv){
 /*free all file name strings*/
 void distract(char** filesList[4],int ListCounters[4]){
 	int i,j;
-	printf("---Start Distraction--- \n");
 	for(i=0;i<4;i++){
-		for(j=0;j<ListCounters[i];j++){
-			printf("	>free %s \n",filesList[i][j]);
+		for(j=0;j<ListCounters[i];j++)
 			free(filesList[i][j]);
-		}
 		free(filesList[i]);
 	}	
-	printf("---Finish Distraction--- \n");
 }

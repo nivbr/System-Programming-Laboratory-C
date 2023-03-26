@@ -20,12 +20,7 @@ bool pass(char** filesList[4],int listCounters[4]){
         chart = newSymbolChart();
         extApperance = newList();
         if(pass1(filesList[afterMacro][i],chart,&codeMemSize,&dataMemSize,dataMem,codeMem)){  /*no error found*/
-            printSymbolChart(chart);    /*debug print*/
-            /*printMemPic(dataMem,"data");*/
             if(pass2(filesList[afterMacro][i],chart,extApperance,dataMem,codeMem)){  /*no error found*/
-                printSymbolChart(chart);    /*debug print*/
-                printMemPic(codeMem,codeMemSize,"code");
-                printMemPic(dataMem,dataMemSize,"data");
                 createObFile(filesList[afterMacro][i],codeMemSize,dataMemSize,codeMem,dataMem);
                 createEntFile(filesList[afterMacro][i],chart);
                 createExtFile(filesList[afterMacro][i],extApperance);

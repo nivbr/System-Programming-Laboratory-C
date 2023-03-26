@@ -55,15 +55,6 @@ bool stringIsEmpty(char* s){
     return true;
 }
 
-/*debugging*/
-void printMemPic(int mem[MEMORY_SIZE],int size, const char* headline){
-    int i;
-    printf("\t--%s memory map--\n",headline);
-    for(i=0;i<MEMORY_SIZE && i<size;i++)
-            printf("\t\t%d | %d\n",i,mem[i]);
-    printf("\t----------------------\n\n");
-}
-
 /*calculate how many words this line of original code is gonna take evantually in memory, used by pass1*/
 int calcL(char line[LINE_LENGTH], bool startWLable, bool* errorFlag, int lineCounter){
     int i,cur_op=0;
@@ -131,16 +122,10 @@ bool regIsCorrect(char token[LINE_LENGTH]){
 /*return: 0-immidiate 1-lable 3-register*/
 int token2op(char token[LINE_LENGTH]){
     clearString(token);
-    printf("token2op: token-%s ",token);
-    if(token[0]=='r'&&token[1]>='0'&&token[1]<='7'){
-            printf("to REGISTER\n");
+    if(token[0]=='r'&&token[1]>='0'&&token[1]<='7')
             return REGISTER;
-    }
-    if(token[0]=='#'&& ++token && atoi(token)  /*what if #0?*/){
-        printf("to IMMIDIATE\n");
+    if(token[0]=='#'&& ++token && atoi(token))        
         return IMMIDIATE;
-    }
-    printf("to LABLE\n");
     return LABLE;
 }
 
@@ -277,20 +262,6 @@ void strip_extra_spaces(char* str) {
     if(!isspace(str[i]) || (i > 0 && !isspace(str[i-1])))
       str[x++] = str[i];
   str[x] = '\0';  
-}
-
-/*for debugging*/
-void print_binary(int num){
-    unsigned int mask = 1u << 13;  /* create a mask with the leftmost bit set*/
-    int i;
-    for(i=0;i<14;i++){
-        if (num & mask) 
-            printf("/");    /*1*/
-        else
-            printf(".");    /*0*/
-        mask >>= 1;  /* shift the mask to the right*/
-    }
-    printf("\n");
 }
 
 /*returns true if string is OK*/

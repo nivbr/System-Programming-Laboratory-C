@@ -4,7 +4,6 @@
 
 bool inpCol(int argc, char** argv, char** filesList[4],int howManyFiles[4]){
 	int i;
-	printf(">Input collection \n");	
 	howManyFiles[original]=argc-1;
 	filesList[original] = (char**)malloc((argc-1)*sizeof(char*)); /*argc-1 beacuse program name doesnt count*/
 	if (!filesList[original]){
@@ -20,6 +19,5 @@ bool inpCol(int argc, char** argv, char** filesList[4],int howManyFiles[4]){
 			exit(1);
 		}
 	} 
-	printf(">End of Input collection \n\n");	
 	return true;
 }

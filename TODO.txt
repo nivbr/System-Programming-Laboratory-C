@@ -1,7 +1,3 @@
-generally:
-	_write errors to stdout: simply use fprintf(stderr,"ERROR msg...");
-	_use exit(1) on failed malloc()
-
 symbolChart:
 	_make sure resizing works good.
 	

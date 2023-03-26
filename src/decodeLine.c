@@ -78,7 +78,6 @@ void decode(char line[LINE_LENGTH],bool startWLable, symbolChart * chart,LinkedL
             *errorFlag=true;            
             fprintf(stdout,"ERROR: (line:%d) too many operands !\n",lineCounter);            
         }else{
-            printf("\t2op group: p1:%s ,p2:%s\n",p1,p2);
             shita = token2op(p1);
             opword->src = token2op(p1);
             opword->dst = token2op(p2);        
@@ -160,7 +159,6 @@ void decodeObv(OpWord *opword, int opNum){
 /*immidiate (#num)*/
 void decodeShita0(char* word,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
     word++;
-    print_binary(4 * atoi(word));
     codeMem[(*L)++]= 4 * atoi(word);  /*++word*/
 }
 /*lable*/
@@ -188,8 +186,7 @@ void decodeShita1(char* word,int *L ,int codeMem[MEMORY_SIZE], symbolChart *char
         *errorFlag=true;
         free(mila);
         return;
-    }
-    print_binary(mila->ERA + 4*mila->rest);
+    }    
     codeMem[(*L)++] = mila->ERA + 4*mila->rest;
     free(mila);
 }
@@ -217,18 +214,13 @@ void decodeShita2(char* word1, char* word2,int *L ,int codeMem[MEMORY_SIZE], sym
     }
 }
 void decodeShita3(char* word,bool dst,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
-    if(dst){ /*op is dst*/
-        print_binary(4 * atoi(strstr(word,"r")+1));
-        codeMem[(*L)++]= 4 * atoi(strstr(word,"r")+1);
-    }
-    else{    /*op is src*/
-        print_binary(256 * atoi(strstr(word,"r")+1));
-        codeMem[(*L)++]= 256 * atoi(strstr(word,"r")+1);
-    }
+    if(dst) /*op is dst*/        
+        codeMem[(*L)++]= 4 * atoi(strstr(word,"r")+1);    
+    else    /*op is src*/
+        codeMem[(*L)++]= 256 * atoi(strstr(word,"r")+1);    
 }
 void decodeTwoRegs(char* reg1, char* reg2,int *L, int codeMem[MEMORY_SIZE], symbolChart *chart){
     clearString(reg1);clearString(reg2);
-    print_binary(4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1));
     codeMem[(*L)++] = 4*atoi(strstr(reg2,"r")+1) + 256*atoi(strstr(reg1,"r")+1);
 }
 /*converte */
