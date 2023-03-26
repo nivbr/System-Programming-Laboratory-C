@@ -47,7 +47,6 @@ bool doFile(char* filename, hashTable* table){
     }    
     strcpy(newFileName,filename);
     changeFileType(newFileName);
-    printf("newFileName: %s\n",newFileName);    
     writeFP = fopen(newFileName,"w+");     /*open 'after macro file' for writing*/    
     newTable(table);
     while(fgets(line,LINE_LENGTH,readFP)){
