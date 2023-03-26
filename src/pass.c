@@ -8,27 +8,27 @@ bool pass1(char* filename ,symbolChart * chart,int *codeMemSize ,int *dataMemSiz
 bool pass2(char* filename ,symbolChart * chart,LinkedList* extApperance,int dataMem[MEMORY_SIZE], int codeMem[MEMORY_SIZE]);
 
 /*takes care of the whole parsing process (pass1,pass2,creating ouput files)*/
-bool pass(char** filesList[4],int listCounters[4]){
+bool pass(char* files[LINE_LENGTH], int filesCounter){
     symbolChart * chart;
     LinkedList * extApperance;
     int dataMem[MEMORY_SIZE]={0};
     int codeMem[MEMORY_SIZE]={0};
     int i, codeMemSize=0,dataMemSize=0;
     printf(">Parsing process\n\n");
-    for (i=0;i<listCounters[afterMacro];i++){
-        printf(">Parsing [%s]\n",filesList[afterMacro][i]);
+    for (i=0;i<filesCounter;i++){
+        printf(">Parsing [%s]\n",files[i]);
         chart = newSymbolChart();
         extApperance = newList();
-        if(pass1(filesList[afterMacro][i],chart,&codeMemSize,&dataMemSize,dataMem,codeMem)){  /*no error found*/
-            if(pass2(filesList[afterMacro][i],chart,extApperance,dataMem,codeMem)){  /*no error found*/
-                createObFile(filesList[afterMacro][i],codeMemSize,dataMemSize,codeMem,dataMem);
-                createEntFile(filesList[afterMacro][i],chart);
-                createExtFile(filesList[afterMacro][i],extApperance);
+        if(pass1(files[i],chart,&codeMemSize,&dataMemSize,dataMem,codeMem)){  /*no error found*/
+            if(pass2(files[i],chart,extApperance,dataMem,codeMem)){  /*no error found*/
+                createObFile(files[i],codeMemSize,dataMemSize,codeMem,dataMem);
+                createEntFile(files[i],chart);
+                createExtFile(files[i],extApperance);
             }
         }
         deleteSymbolChart(chart);
         deleteList(extApperance);
-        printf(">End Parsing [%s]\n\n",filesList[afterMacro][i]);
+        printf(">End Parsing [%s]\n\n",files[i]);
     }
     printf("\n\n>End Parsing process\n\n");
     return true;

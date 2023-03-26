@@ -5,26 +5,24 @@
 #define WORD_FORMAT " %80s"
 #define DOUBLE_WORD_FORMAT " %80s %80s"
 
-bool prePro(char**  filesLists[4], int howManyFiles[4]);    /*main pre-processing*/
+bool prePro(char** files, int filesCounter);    /*main pre-processing*/
 bool doFile(char* filename, hashTable* table);              /*pre processing per file*/
 void changeFileType(char* filename);                        /*changes file type from .as to .am*/
 char* pushToMacroVal(char* cur, char* new);                 /*add chars into the string which holds macro value*/
 
 /*does the preoricessing, returns true if all went OK*/
-bool prePro(char**  filesLists[4], int howManyFiles[4]){
+bool prePro(char** files, int filesCounter){
     int i;
-    hashTable table;    
-    filesLists[afterMacro]=(char**)malloc((sizeof(char *))*howManyFiles[original]);     /*change to char* instead of char** ? */
-    if(!filesLists[afterMacro]){        
-        fprintf(stdout,"Alocation Error !\n");        
-        exit(1);
+    hashTable table;
+    printf(">start pre pro\n");
+    for(i=0;i<filesCounter;i++){
+        if(doFile(files[i], &table)){ /*update file names from x.as to x.am */            
+            changeFileType(files[i]);
+        }
+        else
+            memset( files[i],0,sizeof(files[i]) );    /*if the file should't be created then delete it's name*/        
     }
-    for(i=0;i<howManyFiles[original];i++)
-        if(doFile(filesLists[original][i], &table)){ /*update return list of .am files*/
-            filesLists[afterMacro][howManyFiles[afterMacro]] = (char*)malloc((sizeof(char))*strlen(filesLists[original][i]));   /*same as line 17 comment*/             
-            strcpy(filesLists[afterMacro][howManyFiles[afterMacro]++],filesLists[original][i]); /*copy name + increase counter*/
-            changeFileType(filesLists[afterMacro][howManyFiles[afterMacro]-1]);
-        }       
+    printf(">end pre pro\n");
     return true;
 }
 
@@ -37,19 +35,20 @@ bool doFile(char* filename, hashTable* table){
     char token[LINE_LENGTH]= ""; /*holds current word*/
     char line[LINE_LENGTH]= "";  /*holds current line*/
     FILE* readFP, *writeFP; /*file pointer to read/write .as/.am */
-    hashNode* tempMacroNode = NULL;
+    hashNode* tempMacroNode = NULL;    
     if((readFP = fopen(filename,"r"))==NULL)        
-        return false;   /* ^ file doesn't exist*/
+        return false;   /* ^ file doesn't exist*/    
     /*file do exist-> create new file with .am type*/
     newFileName = (char*)malloc(sizeof(char)*strlen(filename));
     if(!newFileName){        
         fprintf(stdout,"Alocation error ! \n");        
         fclose(readFP);
         exit(1);
-    }
+    }    
     strcpy(newFileName,filename);
     changeFileType(newFileName);
-    writeFP = fopen(newFileName,"w+");     /*open 'after macro file' for writing*/
+    printf("newFileName: %s\n",newFileName);    
+    writeFP = fopen(newFileName,"w+");     /*open 'after macro file' for writing*/    
     newTable(table);
     while(fgets(line,LINE_LENGTH,readFP)){
         sscanf(line,WORD_FORMAT,token);

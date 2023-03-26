@@ -6,6 +6,6 @@
 #include "linkedList.h"
 #include <ctype.h>
 
-bool pass(char** filesList[4],int listCounters[4]);
+bool pass(char* files[LINE_LENGTH], int filesCounter);
 
 #endif
